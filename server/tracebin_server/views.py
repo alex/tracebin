@@ -1,0 +1,2 @@
+def home(request):
+    pass

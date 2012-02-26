@@ -1,0 +1,37 @@
+{% extends "traces/trace/base.html" %}
+
+{% load trace_helpers %}
+
+
+{% block page_content %}
+    <section class="compiled-trace">
+        <header>
+            <h1>{{ trace.root_file }}</h1>
+        </header>
+        {% for section in trace.sections.all %}
+            <section class="code-section {{ type }}">
+                <header>
+                    <h1>{{ section.get_label_display }}</h1>
+                </header>
+                {% for chunk in section.chunks.all %}
+                    {% if chunk.is_resop %}
+                        <pre>{{ chunk.raw_source }}</pre>
+                    {% elif chunk.is_python %}
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <td class="linenos">
+                                        <pre>{{ chunk.linenos|newlinejoin }}</pre>
+                                    </td>
+                                    <td class="source-body">
+                                        <pre>{{ chunk.raw_source }}</pre>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    {% endif %}
+                {% endfor %}
+            </section>
+        {% endfor %}
+    </section>
+{% endblock %}

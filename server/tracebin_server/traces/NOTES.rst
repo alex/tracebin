@@ -1,0 +1,30 @@
+- Log
+    - stats
+        - runtime
+        - counters of stuff: aborts, compiled, etc. (or computed later?)
+    - runtime env
+        - cli
+        - std{err,out}
+        - gc flags
+        - jit flags
+        - build options
+            - version
+            - rootfinder
+            - gc
+    - traces
+        - counters
+        - type (python, re, numpy)
+        - root (func/file/etc.)
+        - ops           }
+        - source code   } all interleaved correctly, and seperated into sections
+        - assembler     }
+    - aborts
+        - cause
+        - locations
+    - times
+        - timeline
+        - breakdown
+    - metadata
+        - user
+    - options
+        - public/private

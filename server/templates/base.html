@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/bootstrap.min.css" />
+        <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/global.css">
+        <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.min.js"></script>
+        <script type="text/javascript" src="{{ STATIC_URL }}js/bootstrap-dropdown.js"></script>
+        <script type="text/javascript" src="{{ STATIC_URL }}js/bootstrap-tabs.js"></script>
+        <title>Tracebin</title>
+    </head>
+    <body>
+        <header id="header">
+            <div class="topbar">
+                <div class="fill">
+                    <div class="container">
+                        <a href="{% url home %}" class="brand">Tracebin</a>
+                        <ul class="nav">
+                            <li>
+                                <a href="{% url trace_upload %}">New Trace</a>
+                            </li>
+                        </ul>
+                        <ul class="nav secondary-nav">
+                            <li>
+                                <a href="{% url login %}">Login</a>
+                            </li>
+                            <li>
+                                <p>or</p>
+                            </li>
+                            <li>
+                                <a href="#">Register</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <section id="content">
+            <div class="container">
+                <div class="content">
+                    <div class="main-header">
+                        <h1>{% block page_title %}{% endblock %}</h1>
+                    </div>
+                    {% block content %}{% endblock %}
+                </div>
+            </div>
+        </section>
+        <footer>
+            <div class="container">
+                Tracebin is powered by Python, Django, and contributors like you!
+            </div>
+        </footer>
+    </body>
+</html>

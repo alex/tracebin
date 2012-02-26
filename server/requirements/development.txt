@@ -1,0 +1,4 @@
+-r base.txt
+
+-e git://github.com/alex/django-fixture-generator.git#egg=fixture_generator
+

@@ -1,0 +1,7 @@
+{% if compiled.is_python %}
+    Loop in <code>{{ compiled.root_file }}:{{ compiled.root_function }}()</code>
+{% elif compiled.is_regex %}
+    Regex <code>r"{{ compiled.pattern }}"</code>
+{% elif compiled.is_numpypy %}
+    NumPyPy expression
+{% endif %}

@@ -1,0 +1,186 @@
+/* From Sentry 2 */
+
+html, body {
+    background-color: #EEEEEE;
+}
+
+body {
+    padding-top: 60px;
+}
+
+footer {
+    padding: 40px 0;
+}
+
+.container > .content {
+    background-color: #FFFFFF;
+    padding: 20px;
+    margin: 0 -20px;
+    -webkit-border-radius: 0 0 6px 6px;
+    -moz-border-radius: 0 0 6px 6px;
+    border-radius: 0 0 6px 6px;
+    -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, .15);
+    -moz-box-shadow: 0 1px 2px rgba(0, 0, 0, .15);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .15);
+}
+
+.main-header {
+    background-color: #F5F5F5;
+    padding: 10px 20px 0;
+    margin: -20px -20px 20px;
+    border-bottom: 1px solid #DDDDDD;
+    -webkit-box-shadow: 0 1px 0 rgba(255, 255, 255, .5);
+    -moz-box-shadow: 0 1px 0 rgba(255, 255, 255, .5);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, .5);
+    position: relative;
+}
+
+.main-header h1 {
+    margin-bottom: 8px;
+}
+
+.tabs > li.pull-right {
+    float: right;
+}
+
+dl.flat {
+    margin-bottom: 1em;
+}
+
+dl.flat dt {
+    float: left;
+    clear: left;
+    width: 160px;
+    padding-bottom: 5px;
+}
+
+dl.flat dd {
+    padding-bottom: 5px;
+}
+
+.invocation {
+    line-height: 1.5em;
+}
+
+/* From Wilson Miner's Article on A List Apart on data visualization */
+
+.chartlist {
+    margin-left: 2px;
+}
+
+.chartlist li {
+    position: relative;
+    display: block;
+    border-bottom: 1px solid #EEEEEE;
+}
+
+.chartlist li:hover {
+    background: #EFEFEF;
+}
+
+.chartlist .count {
+    display: block;
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 0 0.3em;
+    text-align: right;
+    color: #999999;
+    font-weight: bold;
+    font-size: 0.875em;
+    line-height: 2em;
+}
+
+.chartlist li a {
+    display: block;
+    padding: 0.4em 4.5em 0.4em 0.5em;
+    position: relative;
+    z-index: 2;
+    color: #2D7BB2;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.chartlist li a:hover {
+    color: #333333;
+}
+
+.chartlist .index {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    line-height: 2em;
+    background: #B8E4F5;
+    text-indent: -9999px;
+    overflow: hidden;
+}
+
+/* Taken in part from the lodgeit pastebin, modified. */
+
+.compiled-trace > header h1 {
+    font-weight: 200;
+}
+
+.code-section {
+    margin-bottom: 4em;
+}
+
+.code-section > header h1 {
+    font-weight: bold;
+    font-size: 1em;
+    color: #888;
+    text-transform: uppercase;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 0.75em;
+}
+
+.code-section pre {
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    overflow-x: auto;
+    word-wrap: normal;
+    white-space: pre;
+    padding: 0;
+}
+
+.code-section > pre {
+    margin-bottom: 2em;
+}
+
+.code-section table {
+    margin-bottom: 0.5em;
+}
+
+.code-section td {
+    border: none;
+    padding: 4px;
+}
+
+.code-section .linenos {
+    background: #444;
+    color: white;
+    width: 3em;
+    text-align: right;
+}
+
+.code-section .source-body {
+    background: #eee;
+}
+
+.code-section table pre {
+    margin-bottom: 0;
+    padding: 0;
+    font-size: inherit;
+}
+
+
+/* Overrides for bootstrap */
+
+code {
+    background-color: #EEEEEE;
+}

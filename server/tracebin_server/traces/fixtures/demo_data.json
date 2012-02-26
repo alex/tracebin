@@ -1,0 +1,1026 @@
+[
+    {
+        "pk": 1, 
+        "model": "traces.log", 
+        "fields": {
+            "uploader": null, 
+            "stdout": "", 
+            "command": "pypy test.py", 
+            "stderr": "", 
+            "runtime": 9.8, 
+            "public": true
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "traces.runtimeenviroment", 
+        "fields": {
+            "value": "6000", 
+            "kind": 3, 
+            "log": 1, 
+            "key": "trace_limit"
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "traces.runtimeenviroment", 
+        "fields": {
+            "value": "1000", 
+            "kind": 3, 
+            "log": 1, 
+            "key": "loop_longevity"
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "traces.runtimeenviroment", 
+        "fields": {
+            "value": "5", 
+            "kind": 3, 
+            "log": 1, 
+            "key": "retrace_limit"
+        }
+    }, 
+    {
+        "pk": 4, 
+        "model": "traces.runtimeenviroment", 
+        "fields": {
+            "value": "200", 
+            "kind": 3, 
+            "log": 1, 
+            "key": "trace_eagerness"
+        }
+    }, 
+    {
+        "pk": 5, 
+        "model": "traces.runtimeenviroment", 
+        "fields": {
+            "value": "all", 
+            "kind": 3, 
+            "log": 1, 
+            "key": "enable_opts"
+        }
+    }, 
+    {
+        "pk": 6, 
+        "model": "traces.runtimeenviroment", 
+        "fields": {
+            "value": "15", 
+            "kind": 3, 
+            "log": 1, 
+            "key": "max_retrace_guards"
+        }
+    }, 
+    {
+        "pk": 7, 
+        "model": "traces.runtimeenviroment", 
+        "fields": {
+            "value": "1039", 
+            "kind": 3, 
+            "log": 1, 
+            "key": "treshold"
+        }
+    }, 
+    {
+        "pk": 8, 
+        "model": "traces.runtimeenviroment", 
+        "fields": {
+            "value": "1619", 
+            "kind": 3, 
+            "log": 1, 
+            "key": "function_threshold"
+        }
+    }, 
+    {
+        "pk": 9, 
+        "model": "traces.runtimeenviroment", 
+        "fields": {
+            "value": "1", 
+            "kind": 3, 
+            "log": 1, 
+            "key": "inlining"
+        }
+    }, 
+    {
+        "pk": 10, 
+        "model": "traces.runtimeenviroment", 
+        "fields": {
+            "value": "4MB", 
+            "kind": 2, 
+            "log": 1, 
+            "key": "PYPY_GC_NURSERY"
+        }
+    }, 
+    {
+        "pk": 11, 
+        "model": "traces.runtimeenviroment", 
+        "fields": {
+            "value": "1.82", 
+            "kind": 2, 
+            "log": 1, 
+            "key": "PYPY_GC_MAJOR_COLLECT"
+        }
+    }, 
+    {
+        "pk": 12, 
+        "model": "traces.runtimeenviroment", 
+        "fields": {
+            "value": "1.4", 
+            "kind": 2, 
+            "log": 1, 
+            "key": "PYPY_GC_GROWTH"
+        }
+    }, 
+    {
+        "pk": 13, 
+        "model": "traces.runtimeenviroment", 
+        "fields": {
+            "value": "c2d42bf471da", 
+            "kind": 1, 
+            "log": 1, 
+            "key": "PyPy Version"
+        }
+    }, 
+    {
+        "pk": 14, 
+        "model": "traces.runtimeenviroment", 
+        "fields": {
+            "value": "asmgcc", 
+            "kind": 1, 
+            "log": 1, 
+            "key": "GC root finder"
+        }
+    }, 
+    {
+        "pk": 15, 
+        "model": "traces.runtimeenviroment", 
+        "fields": {
+            "value": "minimark", 
+            "kind": 1, 
+            "log": 1, 
+            "key": "Garbage collector"
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "traces.timelineevent", 
+        "fields": {
+            "start_time": 0, 
+            "end_time": 65, 
+            "log": 1, 
+            "event_type": "jit-running"
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "traces.timelineevent", 
+        "fields": {
+            "start_time": 65, 
+            "end_time": 77, 
+            "log": 1, 
+            "event_type": "gc-major"
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "traces.timelineevent", 
+        "fields": {
+            "start_time": 77, 
+            "end_time": 85, 
+            "log": 1, 
+            "event_type": "jit-tracing"
+        }
+    }, 
+    {
+        "pk": 4, 
+        "model": "traces.timelineevent", 
+        "fields": {
+            "start_time": 85, 
+            "end_time": 93, 
+            "log": 1, 
+            "event_type": "gc-mior"
+        }
+    }, 
+    {
+        "pk": 5, 
+        "model": "traces.timelineevent", 
+        "fields": {
+            "start_time": 93, 
+            "end_time": 100, 
+            "log": 1, 
+            "event_type": "jit-backend-compile"
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "traces.statcounter", 
+        "fields": {
+            "count": 3, 
+            "log": 1, 
+            "label": "traces_compiled"
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "traces.statcounter", 
+        "fields": {
+            "count": 0, 
+            "log": 1, 
+            "label": "traces_aborted"
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "traces.statcounter", 
+        "fields": {
+            "count": 12, 
+            "log": 1, 
+            "label": "gc_major"
+        }
+    }, 
+    {
+        "pk": 4, 
+        "model": "traces.statcounter", 
+        "fields": {
+            "count": 37, 
+            "log": 1, 
+            "label": "gc_minor"
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "traces.basetrace", 
+        "fields": {
+            "log": 1
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "traces.basetrace", 
+        "fields": {
+            "log": 1
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "traces.basetrace", 
+        "fields": {
+            "log": 1
+        }
+    }, 
+    {
+        "pk": 4, 
+        "model": "traces.basetrace", 
+        "fields": {
+            "log": 1
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "traces.pythontrace", 
+        "fields": {
+            "root_file": "test.py", 
+            "root_function": "main"
+        }
+    }, 
+    {
+        "pk": 4, 
+        "model": "traces.pythontrace", 
+        "fields": {
+            "root_file": "test.py", 
+            "root_function": "main_inline"
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "traces.regextrace", 
+        "fields": {
+            "pattern": "\\w+"
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "traces.numpypytrace", 
+        "fields": {
+            "debug_repr": "Call1(sin, Call2(multiply, Array, Scalar))"
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "traces.tracesection", 
+        "fields": {
+            "trace": 1, 
+            "label": 1
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "traces.tracesection", 
+        "fields": {
+            "trace": 1, 
+            "label": 2
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "traces.tracesection", 
+        "fields": {
+            "trace": 1, 
+            "label": 3
+        }
+    }, 
+    {
+        "pk": 4, 
+        "model": "traces.tracesection", 
+        "fields": {
+            "trace": 4, 
+            "label": 1
+        }
+    }, 
+    {
+        "pk": 5, 
+        "model": "traces.tracesection", 
+        "fields": {
+            "trace": 4, 
+            "label": 2
+        }
+    }, 
+    {
+        "pk": 6, 
+        "model": "traces.tracesection", 
+        "fields": {
+            "trace": 4, 
+            "label": 3
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "traces.tracechunk", 
+        "fields": {
+            "ordering": 0, 
+            "raw_source": "\n[p0, p1]\np2 = getfield_gc(p0, descr=<FieldP pypy.interpreter.pyframe.PyFrame.inst_last_exception 80>)\np3 = getfield_gc(p0, descr=<FieldP pypy.interpreter.pyframe.PyFrame.inst_pycode 120>)\ni4 = getfield_gc(p0, descr=<FieldU pypy.interpreter.pyframe.PyFrame.inst_is_being_profiled 150>)\np5 = getfield_gc(p0, descr=<FieldP pypy.interpreter.pyframe.PyFrame.inst_lastblock 96>)\ni6 = getfield_gc(p0, descr=<FieldS pypy.interpreter.pyframe.PyFrame.inst_valuestackdepth 128>)\ni7 = getfield_gc(p0, descr=<FieldS pypy.interpreter.pyframe.PyFrame.inst_last_instr 88>)\np8 = getfield_gc(p0, descr=<FieldP pypy.interpreter.pyframe.PyFrame.inst_locals_stack_w 104>)\np10 = getarrayitem_gc(p8, 0, descr=<ArrayP 8>)\np12 = getarrayitem_gc(p8, 1, descr=<ArrayP 8>)\np14 = getarrayitem_gc(p8, 2, descr=<ArrayP 8>)\np16 = getarrayitem_gc(p8, 3, descr=<ArrayP 8>)\np18 = getarrayitem_gc(p8, 4, descr=<ArrayP 8>)\np20 = getarrayitem_gc(p8, 5, descr=<ArrayP 8>)\np22 = getarrayitem_gc(p8, 6, descr=<ArrayP 8>)\np23 = getfield_gc(p0, descr=<FieldP pypy.interpreter.pyframe.PyFrame.inst_cells 40>)\n", 
+            "section": 1
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "traces.tracechunk", 
+        "fields": {
+            "ordering": 0, 
+            "raw_source": "\nlabel(p0, p1, p2, p3, i4, p5, i6, i7, p10, p12, p14, p16, p18, p20, p22, descr=TargetToken(140048017138976))\n", 
+            "section": 2
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "traces.tracechunk", 
+        "fields": {
+            "ordering": 1, 
+            "raw_source": "\ndef main():\n    data = [0] * N\n    for i in xrange(N):\n", 
+            "section": 2
+        }
+    }, 
+    {
+        "pk": 4, 
+        "model": "traces.tracechunk", 
+        "fields": {
+            "ordering": 2, 
+            "raw_source": "\ndebug_merge_point(0, '<code object main. file 'test.py'. line 3> #26 FOR_ITER')\nguard_value(i6, 4, descr=<Guard4>) [i6, p1, p0, p2, p3, i4, p5, i7, p10, p12, p14, p16, p18, p20, p22]\nguard_class(p16, 38449928, descr=<Guard5>) [p1, p0, p16, p2, p3, i4, p5, p10, p12, p14, p18, p20, p22]\ni26 = getfield_gc(p16, descr=<FieldS pypy.module.__builtin__.functional.W_XRangeIterator.inst_remaining 16>)\ni28 = int_gt(i26, 0)\nguard_true(i28, descr=<Guard6>) [p1, p0, p16, p2, p3, i4, p5, p10, p12, p14, p18, p20, p22]\ni29 = getfield_gc(p16, descr=<FieldS pypy.module.__builtin__.functional.W_XRangeIterator.inst_current 8>)\ni30 = getfield_gc(p16, descr=<FieldS pypy.module.__builtin__.functional.W_XRangeIterator.inst_step 24>)\ni31 = int_add(i29, i30)\ni33 = int_sub(i26, 1)\nsetfield_gc(p16, i31, descr=<FieldS pypy.module.__builtin__.functional.W_XRangeIterator.inst_current 8>)\nsetfield_gc(p16, i33, descr=<FieldS pypy.module.__builtin__.functional.W_XRangeIterator.inst_remaining 16>)\nguard_value(i4, 0, descr=<Guard7>) [i4, p1, p0, p2, p3, p5, p10, p12, p14, p16, p20, p22, i29]\ndebug_merge_point(0, '<code object main. file 'test.py'. line 3> #29 STORE_FAST')\n", 
+            "section": 2
+        }
+    }, 
+    {
+        "pk": 5, 
+        "model": "traces.tracechunk", 
+        "fields": {
+            "ordering": 3, 
+            "raw_source": "        x = i ^ 3", 
+            "section": 2
+        }
+    }, 
+    {
+        "pk": 6, 
+        "model": "traces.tracechunk", 
+        "fields": {
+            "ordering": 4, 
+            "raw_source": "\ndebug_merge_point(0, '<code object main. file 'test.py'. line 3> #32 LOAD_FAST')\ndebug_merge_point(0, '<code object main. file 'test.py'. line 3> #35 LOAD_CONST')\nguard_value(p3, ConstPtr(ptr35), descr=<Guard8>) [p1, p0, p3, p2, p5, p10, p14, p16, p20, p22, i29]\ndebug_merge_point(0, '<code object main. file 'test.py'. line 3> #38 BINARY_XOR')\ni37 = int_xor(i29, 3)\ndebug_merge_point(0, '<code object main. file 'test.py'. line 3> #39 STORE_FAST')\n", 
+            "section": 2
+        }
+    }, 
+    {
+        "pk": 7, 
+        "model": "traces.tracechunk", 
+        "fields": {
+            "ordering": 5, 
+            "raw_source": "        x <<= 2", 
+            "section": 2
+        }
+    }, 
+    {
+        "pk": 8, 
+        "model": "traces.tracechunk", 
+        "fields": {
+            "ordering": 6, 
+            "raw_source": "\ndebug_merge_point(0, '<code object main. file 'test.py'. line 3> #42 LOAD_FAST')\ndebug_merge_point(0, '<code object main. file 'test.py'. line 3> #45 LOAD_CONST')\ndebug_merge_point(0, '<code object main. file 'test.py'. line 3> #48 INPLACE_LSHIFT')\ni39 = int_lshift(i37, 2)\ni40 = int_rshift(i39, 2)\ni41 = int_ne(i40, i37)\nguard_false(i41, descr=<Guard9>) [p1, p0, i39, p2, p5, p10, p16, p22, i37, i29]\ndebug_merge_point(0, '<code object main. file 'test.py'. line 3> #49 STORE_FAST')\n", 
+            "section": 2
+        }
+    }, 
+    {
+        "pk": 9, 
+        "model": "traces.tracechunk", 
+        "fields": {
+            "ordering": 7, 
+            "raw_source": "        x *= 7", 
+            "section": 2
+        }
+    }, 
+    {
+        "pk": 10, 
+        "model": "traces.tracechunk", 
+        "fields": {
+            "ordering": 8, 
+            "raw_source": "\ndebug_merge_point(0, '<code object main. file 'test.py'. line 3> #52 LOAD_FAST')\ndebug_merge_point(0, '<code object main. file 'test.py'. line 3> #55 LOAD_CONST')\ndebug_merge_point(0, '<code object main. file 'test.py'. line 3> #58 INPLACE_MULTIPLY')\ni43 = int_mul_ovf(i39, 7)\nguard_no_overflow(, descr=<Guard10>) [p1, p0, i43, p2, p5, p10, p16, p22, i39, None, i29]\ndebug_merge_point(0, '<code object main. file 'test.py'. line 3> #59 STORE_FAST')\n", 
+            "section": 2
+        }
+    }, 
+    {
+        "pk": 11, 
+        "model": "traces.tracechunk", 
+        "fields": {
+            "ordering": 9, 
+            "raw_source": "        x -= 1", 
+            "section": 2
+        }
+    }, 
+    {
+        "pk": 12, 
+        "model": "traces.tracechunk", 
+        "fields": {
+            "ordering": 10, 
+            "raw_source": "\ndebug_merge_point(0, '<code object main. file 'test.py'. line 3> #62 LOAD_FAST')\ndebug_merge_point(0, '<code object main. file 'test.py'. line 3> #65 LOAD_CONST')\ndebug_merge_point(0, '<code object main. file 'test.py'. line 3> #68 INPLACE_SUBTRACT')\ni46 = int_sub_ovf(i43, 1)\nguard_no_overflow(, descr=<Guard11>) [p1, p0, i46, p2, p5, p10, p16, p22, i43, None, None, i29]\ndebug_merge_point(0, '<code object main. file 'test.py'. line 3> #69 STORE_FAST')\n", 
+            "section": 2
+        }
+    }, 
+    {
+        "pk": 13, 
+        "model": "traces.tracechunk", 
+        "fields": {
+            "ordering": 11, 
+            "raw_source": "        data[i] = x", 
+            "section": 2
+        }
+    }, 
+    {
+        "pk": 14, 
+        "model": "traces.tracechunk", 
+        "fields": {
+            "ordering": 12, 
+            "raw_source": "\ndebug_merge_point(0, '<code object main. file 'test.py'. line 3> #72 LOAD_FAST')\ndebug_merge_point(0, '<code object main. file 'test.py'. line 3> #75 LOAD_FAST')\nguard_nonnull_class(p10, ConstClass(W_ListObject), descr=<Guard12>) [p1, p0, p10, p2, p5, p16, p22, i46, None, None, None, i29]\ndebug_merge_point(0, '<code object main. file 'test.py'. line 3> #78 LOAD_FAST')\ndebug_merge_point(0, '<code object main. file 'test.py'. line 3> #81 STORE_SUBSCR')\np48 = getfield_gc(p10, descr=<FieldP pypy.objspace.std.listobject.W_ListObject.inst_strategy 16>)\nguard_class(p48, 38554720, descr=<Guard13>) [p1, p0, p10, i29, p48, p2, p5, p16, i46, None, None, None, None]\np50 = getfield_gc(p10, descr=<FieldP pypy.objspace.std.listobject.W_ListObject.inst_lstorage 8>)\ni51 = getfield_gc(p50, descr=<FieldS list.length 8>)\ni52 = uint_ge(i29, i51)\nguard_false(i52, descr=<Guard14>) [p1, p0, p10, i51, i46, i29, p50, p2, p5, p16, None, None, None, None, None]\np53 = getfield_gc(p50, descr=<FieldP list.items 16>)\nsetarrayitem_gc(p53, i29, i46, descr=<ArrayS 8>)\ndebug_merge_point(0, '<code object main. file 'test.py'. line 3> #82 JUMP_ABSOLUTE')\nguard_not_invalidated(, descr=<Guard15>) [p1, p0, p2, p5, p10, p16, i46, None, None, None, i29]\ni55 = getfield_raw(43922552, descr=<FieldS pypysig_long_struct.c_value 0>)\ni57 = int_lt(i55, 0)\nguard_false(i57, descr=<Guard16>) [p1, p0, p2, p5, p10, p16, i46, None, None, None, i29]\ndebug_merge_point(0, '<code object main. file 'test.py'. line 3> #26 FOR_ITER')\ni58 = same_as(i46)\ni59 = same_as(i31)\n", 
+            "section": 2
+        }
+    }, 
+    {
+        "pk": 15, 
+        "model": "traces.tracechunk", 
+        "fields": {
+            "ordering": 0, 
+            "raw_source": "\nlabel(p0, p1, p2, p5, p10, i29, i46, p16, i33, i59, i30, p50, descr=TargetToken(140048017139056))\n", 
+            "section": 3
+        }
+    }, 
+    {
+        "pk": 16, 
+        "model": "traces.tracechunk", 
+        "fields": {
+            "ordering": 1, 
+            "raw_source": "\ndef main():\n    data = [0] * N\n    for i in xrange(N):\n", 
+            "section": 3
+        }
+    }, 
+    {
+        "pk": 17, 
+        "model": "traces.tracechunk", 
+        "fields": {
+            "ordering": 2, 
+            "raw_source": "\ndebug_merge_point(0, '<code object main. file 'test.py'. line 3> #26 FOR_ITER')\ni60 = int_gt(i33, 0)\nguard_true(i60, descr=<Guard17>) [p1, p0, p16, p2, p5, p10, i29, i46]\ni61 = int_add(i59, i30)\ni62 = int_sub(i33, 1)\ndebug_merge_point(0, '<code object main. file 'test.py'. line 3> #29 STORE_FAST')\n", 
+            "section": 3
+        }
+    }, 
+    {
+        "pk": 18, 
+        "model": "traces.tracechunk", 
+        "fields": {
+            "ordering": 3, 
+            "raw_source": "        x = i ^ 3", 
+            "section": 3
+        }
+    }, 
+    {
+        "pk": 19, 
+        "model": "traces.tracechunk", 
+        "fields": {
+            "ordering": 4, 
+            "raw_source": "\ndebug_merge_point(0, '<code object main. file 'test.py'. line 3> #32 LOAD_FAST')\ndebug_merge_point(0, '<code object main. file 'test.py'. line 3> #35 LOAD_CONST')\ndebug_merge_point(0, '<code object main. file 'test.py'. line 3> #38 BINARY_XOR')\ni63 = int_xor(i59, 3)\ndebug_merge_point(0, '<code object main. file 'test.py'. line 3> #39 STORE_FAST')\n", 
+            "section": 3
+        }
+    }, 
+    {
+        "pk": 20, 
+        "model": "traces.tracechunk", 
+        "fields": {
+            "ordering": 5, 
+            "raw_source": "        x <<= 2", 
+            "section": 3
+        }
+    }, 
+    {
+        "pk": 21, 
+        "model": "traces.tracechunk", 
+        "fields": {
+            "ordering": 6, 
+            "raw_source": "\ndebug_merge_point(0, '<code object main. file 'test.py'. line 3> #42 LOAD_FAST')\ndebug_merge_point(0, '<code object main. file 'test.py'. line 3> #45 LOAD_CONST')\ndebug_merge_point(0, '<code object main. file 'test.py'. line 3> #48 INPLACE_LSHIFT')\ni64 = int_lshift(i63, 2)\ni65 = int_rshift(i64, 2)\nsetfield_gc(p16, i61, descr=<FieldS pypy.module.__builtin__.functional.W_XRangeIterator.inst_current 8>)\nsetfield_gc(p16, i62, descr=<FieldS pypy.module.__builtin__.functional.W_XRangeIterator.inst_remaining 16>)\ni66 = int_ne(i65, i63)\nguard_false(i66, descr=<Guard18>) [p1, p0, i64, p2, p5, p10, p16, i63, i59, None, None]\ndebug_merge_point(0, '<code object main. file 'test.py'. line 3> #49 STORE_FAST')\n", 
+            "section": 3
+        }
+    }, 
+    {
+        "pk": 22, 
+        "model": "traces.tracechunk", 
+        "fields": {
+            "ordering": 7, 
+            "raw_source": "        x *= 7", 
+            "section": 3
+        }
+    }, 
+    {
+        "pk": 23, 
+        "model": "traces.tracechunk", 
+        "fields": {
+            "ordering": 8, 
+            "raw_source": "\ndebug_merge_point(0, '<code object main. file 'test.py'. line 3> #52 LOAD_FAST')\ndebug_merge_point(0, '<code object main. file 'test.py'. line 3> #55 LOAD_CONST')\ndebug_merge_point(0, '<code object main. file 'test.py'. line 3> #58 INPLACE_MULTIPLY')\ni67 = int_mul_ovf(i64, 7)\nguard_no_overflow(, descr=<Guard19>) [p1, p0, i67, p2, p5, p10, p16, i64, None, i59, None, None]\ndebug_merge_point(0, '<code object main. file 'test.py'. line 3> #59 STORE_FAST')\n", 
+            "section": 3
+        }
+    }, 
+    {
+        "pk": 24, 
+        "model": "traces.tracechunk", 
+        "fields": {
+            "ordering": 9, 
+            "raw_source": "        x -= 1", 
+            "section": 3
+        }
+    }, 
+    {
+        "pk": 25, 
+        "model": "traces.tracechunk", 
+        "fields": {
+            "ordering": 10, 
+            "raw_source": "\ndebug_merge_point(0, '<code object main. file 'test.py'. line 3> #62 LOAD_FAST')\ndebug_merge_point(0, '<code object main. file 'test.py'. line 3> #65 LOAD_CONST')\ndebug_merge_point(0, '<code object main. file 'test.py'. line 3> #68 INPLACE_SUBTRACT')\ni68 = int_sub_ovf(i67, 1)\nguard_no_overflow(, descr=<Guard20>) [p1, p0, i68, p2, p5, p10, p16, i67, None, None, i59, None, None]\ndebug_merge_point(0, '<code object main. file 'test.py'. line 3> #69 STORE_FAST')\n", 
+            "section": 3
+        }
+    }, 
+    {
+        "pk": 26, 
+        "model": "traces.tracechunk", 
+        "fields": {
+            "ordering": 11, 
+            "raw_source": "        data[i] = x", 
+            "section": 3
+        }
+    }, 
+    {
+        "pk": 27, 
+        "model": "traces.tracechunk", 
+        "fields": {
+            "ordering": 12, 
+            "raw_source": "\ndebug_merge_point(0, '<code object main. file 'test.py'. line 3> #72 LOAD_FAST')\ndebug_merge_point(0, '<code object main. file 'test.py'. line 3> #75 LOAD_FAST')\ndebug_merge_point(0, '<code object main. file 'test.py'. line 3> #78 LOAD_FAST')\ndebug_merge_point(0, '<code object main. file 'test.py'. line 3> #81 STORE_SUBSCR')\ni69 = getfield_gc(p50, descr=<FieldS list.length 8>)\ni70 = uint_ge(i59, i69)\nguard_false(i70, descr=<Guard21>) [p1, p0, p10, i69, i68, i59, p50, p2, p5, p16, None, None, None, None, None, None]\np71 = getfield_gc(p50, descr=<FieldP list.items 16>)\nsetarrayitem_gc(p71, i59, i68, descr=<ArrayS 8>)\ndebug_merge_point(0, '<code object main. file 'test.py'. line 3> #82 JUMP_ABSOLUTE')\nguard_not_invalidated(, descr=<Guard22>) [p1, p0, p2, p5, p10, p16, i68, None, None, None, i59, None, None]\ni72 = getfield_raw(43922552, descr=<FieldS pypysig_long_struct.c_value 0>)\ni73 = int_lt(i72, 0)\nguard_false(i73, descr=<Guard23>) [p1, p0, p2, p5, p10, p16, i68, None, None, None, i59, None, None]\ndebug_merge_point(0, '<code object main. file 'test.py'. line 3> #26 FOR_ITER')\njump(p0, p1, p2, p5, p10, i59, i68, p16, i62, i61, i30, p50, descr=TargetToken(140048017139056))\n", 
+            "section": 3
+        }
+    }, 
+    {
+        "pk": 28, 
+        "model": "traces.tracechunk", 
+        "fields": {
+            "ordering": 0, 
+            "raw_source": "\n[p0, p1]\np2 = getfield_gc(p0, descr=<FieldP pypy.interpreter.pyframe.PyFrame.inst_last_exception 80>)\np3 = getfield_gc(p0, descr=<FieldP pypy.interpreter.pyframe.PyFrame.inst_pycode 120>)\ni4 = getfield_gc(p0, descr=<FieldU pypy.interpreter.pyframe.PyFrame.inst_is_being_profiled 150>)\np5 = getfield_gc(p0, descr=<FieldP pypy.interpreter.pyframe.PyFrame.inst_lastblock 96>)\ni6 = getfield_gc(p0, descr=<FieldS pypy.interpreter.pyframe.PyFrame.inst_valuestackdepth 128>)\ni7 = getfield_gc(p0, descr=<FieldS pypy.interpreter.pyframe.PyFrame.inst_last_instr 88>)\np8 = getfield_gc(p0, descr=<FieldP pypy.interpreter.pyframe.PyFrame.inst_locals_stack_w 104>)\np10 = getarrayitem_gc(p8, 0, descr=<ArrayP 8>)\np12 = getarrayitem_gc(p8, 1, descr=<ArrayP 8>)\np14 = getarrayitem_gc(p8, 2, descr=<ArrayP 8>)\np15 = getfield_gc(p0, descr=<FieldP pypy.interpreter.pyframe.PyFrame.inst_cells 40>)\n", 
+            "section": 4
+        }
+    }, 
+    {
+        "pk": 29, 
+        "model": "traces.tracechunk", 
+        "fields": {
+            "ordering": 1, 
+            "raw_source": "\nlabel(p0, p1, p2, p3, i4, p5, i6, i7, p10, p12, p14, descr=TargetToken(139725302244320))\n", 
+            "section": 5
+        }
+    }, 
+    {
+        "pk": 30, 
+        "model": "traces.tracechunk", 
+        "fields": {
+            "ordering": 2, 
+            "raw_source": "\ndef main():\n    i = 0\n    while i < 10000:\n", 
+            "section": 5
+        }
+    }, 
+    {
+        "pk": 31, 
+        "model": "traces.tracechunk", 
+        "fields": {
+            "ordering": 3, 
+            "raw_source": "\ndebug_merge_point(0, '<code object main_inline. file 'test.py'. line 4> #9 LOAD_FAST')\nguard_value(i6, 1, descr=<Guard4>) [i6, p1, p0, p2, p3, i4, p5, i7, p10, p12, p14]\nguard_nonnull_class(p10, ConstClass(W_IntObject), descr=<Guard5>) [p1, p0, p10, p2, p3, i4, p5, p12, p14]\nguard_value(i4, 0, descr=<Guard6>) [i4, p1, p0, p2, p3, p5, p10, p14]\ndebug_merge_point(0, '<code object main_inline. file 'test.py'. line 4> #12 LOAD_CONST')\nguard_value(p3, ConstPtr(ptr19), descr=<Guard7>) [p1, p0, p3, p2, p5, p10, p14]\ndebug_merge_point(0, '<code object main_inline. file 'test.py'. line 4> #15 COMPARE_OP')\ni20 = getfield_gc_pure(p10, descr=<FieldS pypy.objspace.std.intobject.W_IntObject.inst_intval 8>)\ni22 = int_lt(i20, 10000)\nguard_true(i22, descr=<Guard8>) [p1, p0, p10, p2, p5]\ndebug_merge_point(0, '<code object main_inline. file 'test.py'. line 4> #18 POP_JUMP_IF_FALSE')\n", 
+            "section": 5
+        }
+    }, 
+    {
+        "pk": 32, 
+        "model": "traces.tracechunk", 
+        "fields": {
+            "ordering": 4, 
+            "raw_source": "        i = f(i)", 
+            "section": 5
+        }
+    }, 
+    {
+        "pk": 33, 
+        "model": "traces.tracechunk", 
+        "fields": {
+            "ordering": 5, 
+            "raw_source": "\ndebug_merge_point(0, '<code object main_inline. file 'test.py'. line 4> #21 LOAD_GLOBAL')\np23 = getfield_gc(p0, descr=<FieldP pypy.interpreter.eval.Frame.inst_w_globals 8>)\nguard_value(p23, ConstPtr(ptr24), descr=<Guard9>) [p1, p0, p23, p2, p5, p10]\np25 = getfield_gc(p23, descr=<FieldP pypy.objspace.std.dictmultiobject.W_DictMultiObject.inst_strategy 16>)\nguard_value(p25, ConstPtr(ptr26), descr=<Guard10>) [p1, p0, p25, p23, p2, p5, p10]\nguard_not_invalidated(, descr=<Guard11>) [p1, p0, p23, p2, p5, p10]\ndebug_merge_point(0, '<code object main_inline. file 'test.py'. line 4> #24 LOAD_FAST')\ndebug_merge_point(0, '<code object main_inline. file 'test.py'. line 4> #27 CALL_FUNCTION')\np28 = call(ConstClass(getexecutioncontext), descr=<Callr 8 EF=1>)\np29 = getfield_gc(p28, descr=<FieldP pypy.interpreter.executioncontext.ExecutionContext.inst_topframeref 64>)\ni30 = force_token()\np31 = getfield_gc(p28, descr=<FieldP pypy.interpreter.executioncontext.ExecutionContext.inst_w_tracefunc 80>)\nguard_isnull(p31, descr=<Guard12>) [p1, p0, p28, p31, p2, p5, p10, i30, p29]\ni32 = getfield_gc(p28, descr=<FieldU pypy.interpreter.executioncontext.ExecutionContext.inst_profilefunc 40>)\ni33 = int_is_zero(i32)\nguard_true(i33, descr=<Guard13>) [p1, p0, p28, p2, p5, p10, i30, p29]\n", 
+            "section": 5
+        }
+    }, 
+    {
+        "pk": 34, 
+        "model": "traces.tracechunk", 
+        "fields": {
+            "ordering": 6, 
+            "raw_source": "\ndef f(i):\n    return i + 1\n", 
+            "section": 5
+        }
+    }, 
+    {
+        "pk": 35, 
+        "model": "traces.tracechunk", 
+        "fields": {
+            "ordering": 7, 
+            "raw_source": "\ndebug_merge_point(1, '<code object f. file 'test.py'. line 1> #0 LOAD_FAST')\ndebug_merge_point(1, '<code object f. file 'test.py'. line 1> #3 LOAD_CONST')\ndebug_merge_point(1, '<code object f. file 'test.py'. line 1> #6 BINARY_ADD')\ni35 = int_add(i20, 1)\ndebug_merge_point(1, '<code object f. file 'test.py'. line 1> #7 RETURN_VALUE')\n", 
+            "section": 5
+        }
+    }, 
+    {
+        "pk": 36, 
+        "model": "traces.tracechunk", 
+        "fields": {
+            "ordering": 8, 
+            "raw_source": "\ndebug_merge_point(0, '<code object main_inline. file 'test.py'. line 4> #30 STORE_FAST')\ndebug_merge_point(0, '<code object main_inline. file 'test.py'. line 4> #33 JUMP_ABSOLUTE')\nguard_not_invalidated(, descr=<Guard14>) [p1, p0, p2, p5, i35, None, None]\ni38 = getfield_raw(44216344, descr=<FieldS pypysig_long_struct.c_value 0>)\ni40 = int_lt(i38, 0)\nguard_false(i40, descr=<Guard15>) [p1, p0, p2, p5, i35, None, None]\ndebug_merge_point(0, '<code object main_inline. file 'test.py'. line 4> #9 LOAD_FAST')\np41 = same_as(ConstPtr(ptr26))\n", 
+            "section": 5
+        }
+    }, 
+    {
+        "pk": 37, 
+        "model": "traces.tracechunk", 
+        "fields": {
+            "ordering": 0, 
+            "raw_source": "\nlabel(p0, p1, p2, p5, i35, descr=TargetToken(139725302244400))\n", 
+            "section": 6
+        }
+    }, 
+    {
+        "pk": 38, 
+        "model": "traces.tracechunk", 
+        "fields": {
+            "ordering": 1, 
+            "raw_source": "\ndef main():\n    i = 0\n    while i < 10000:\n", 
+            "section": 6
+        }
+    }, 
+    {
+        "pk": 39, 
+        "model": "traces.tracechunk", 
+        "fields": {
+            "ordering": 2, 
+            "raw_source": "\ndebug_merge_point(0, '<code object main_inline. file 'test.py'. line 4> #9 LOAD_FAST')\ndebug_merge_point(0, '<code object main_inline. file 'test.py'. line 4> #12 LOAD_CONST')\ndebug_merge_point(0, '<code object main_inline. file 'test.py'. line 4> #15 COMPARE_OP')\ni42 = int_lt(i35, 10000)\nguard_true(i42, descr=<Guard16>) [p1, p0, p2, p5, i35]\ndebug_merge_point(0, '<code object main_inline. file 'test.py'. line 4> #18 POP_JUMP_IF_FALSE')\n", 
+            "section": 6
+        }
+    }, 
+    {
+        "pk": 40, 
+        "model": "traces.tracechunk", 
+        "fields": {
+            "ordering": 3, 
+            "raw_source": "        i = f(i)", 
+            "section": 6
+        }
+    }, 
+    {
+        "pk": 41, 
+        "model": "traces.tracechunk", 
+        "fields": {
+            "ordering": 4, 
+            "raw_source": "\ndebug_merge_point(0, '<code object main_inline. file 'test.py'. line 4> #21 LOAD_GLOBAL')\nguard_not_invalidated(, descr=<Guard17>) [p1, p0, p2, p5, i35]\ndebug_merge_point(0, '<code object main_inline. file 'test.py'. line 4> #24 LOAD_FAST')\ndebug_merge_point(0, '<code object main_inline. file 'test.py'. line 4> #27 CALL_FUNCTION')\ni43 = force_token()\n", 
+            "section": 6
+        }
+    }, 
+    {
+        "pk": 42, 
+        "model": "traces.tracechunk", 
+        "fields": {
+            "ordering": 5, 
+            "raw_source": "\ndef f(i):\n    return i + 1\n", 
+            "section": 6
+        }
+    }, 
+    {
+        "pk": 43, 
+        "model": "traces.tracechunk", 
+        "fields": {
+            "ordering": 6, 
+            "raw_source": "\ndebug_merge_point(1, '<code object f. file 'test.py'. line 1> #0 LOAD_FAST')\ndebug_merge_point(1, '<code object f. file 'test.py'. line 1> #3 LOAD_CONST')\ndebug_merge_point(1, '<code object f. file 'test.py'. line 1> #6 BINARY_ADD')\ni44 = int_add(i35, 1)\ndebug_merge_point(1, '<code object f. file 'test.py'. line 1> #7 RETURN_VALUE')\n", 
+            "section": 6
+        }
+    }, 
+    {
+        "pk": 44, 
+        "model": "traces.tracechunk", 
+        "fields": {
+            "ordering": 7, 
+            "raw_source": "\ndebug_merge_point(0, '<code object main_inline. file 'test.py'. line 4> #30 STORE_FAST')\ndebug_merge_point(0, '<code object main_inline. file 'test.py'. line 4> #33 JUMP_ABSOLUTE')\ni45 = getfield_raw(44216344, descr=<FieldS pypysig_long_struct.c_value 0>)\ni46 = int_lt(i45, 0)\nguard_false(i46, descr=<Guard18>) [p1, p0, p2, p5, i44, None]\ndebug_merge_point(0, '<code object main_inline. file 'test.py'. line 4> #9 LOAD_FAST')\njump(p0, p1, p2, p5, i44, descr=TargetToken(139725302244400))\n", 
+            "section": 6
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "traces.pythonchunk", 
+        "fields": {
+            "start_line": 3, 
+            "end_line": 6
+        }
+    }, 
+    {
+        "pk": 5, 
+        "model": "traces.pythonchunk", 
+        "fields": {
+            "start_line": 6, 
+            "end_line": 7
+        }
+    }, 
+    {
+        "pk": 7, 
+        "model": "traces.pythonchunk", 
+        "fields": {
+            "start_line": 7, 
+            "end_line": 8
+        }
+    }, 
+    {
+        "pk": 9, 
+        "model": "traces.pythonchunk", 
+        "fields": {
+            "start_line": 8, 
+            "end_line": 9
+        }
+    }, 
+    {
+        "pk": 11, 
+        "model": "traces.pythonchunk", 
+        "fields": {
+            "start_line": 9, 
+            "end_line": 10
+        }
+    }, 
+    {
+        "pk": 13, 
+        "model": "traces.pythonchunk", 
+        "fields": {
+            "start_line": 10, 
+            "end_line": 11
+        }
+    }, 
+    {
+        "pk": 16, 
+        "model": "traces.pythonchunk", 
+        "fields": {
+            "start_line": 3, 
+            "end_line": 6
+        }
+    }, 
+    {
+        "pk": 18, 
+        "model": "traces.pythonchunk", 
+        "fields": {
+            "start_line": 6, 
+            "end_line": 7
+        }
+    }, 
+    {
+        "pk": 20, 
+        "model": "traces.pythonchunk", 
+        "fields": {
+            "start_line": 7, 
+            "end_line": 8
+        }
+    }, 
+    {
+        "pk": 22, 
+        "model": "traces.pythonchunk", 
+        "fields": {
+            "start_line": 8, 
+            "end_line": 9
+        }
+    }, 
+    {
+        "pk": 24, 
+        "model": "traces.pythonchunk", 
+        "fields": {
+            "start_line": 9, 
+            "end_line": 10
+        }
+    }, 
+    {
+        "pk": 26, 
+        "model": "traces.pythonchunk", 
+        "fields": {
+            "start_line": 10, 
+            "end_line": 11
+        }
+    }, 
+    {
+        "pk": 30, 
+        "model": "traces.pythonchunk", 
+        "fields": {
+            "start_line": 4, 
+            "end_line": 7
+        }
+    }, 
+    {
+        "pk": 32, 
+        "model": "traces.pythonchunk", 
+        "fields": {
+            "start_line": 7, 
+            "end_line": 8
+        }
+    }, 
+    {
+        "pk": 34, 
+        "model": "traces.pythonchunk", 
+        "fields": {
+            "start_line": 1, 
+            "end_line": 3
+        }
+    }, 
+    {
+        "pk": 38, 
+        "model": "traces.pythonchunk", 
+        "fields": {
+            "start_line": 4, 
+            "end_line": 7
+        }
+    }, 
+    {
+        "pk": 40, 
+        "model": "traces.pythonchunk", 
+        "fields": {
+            "start_line": 7, 
+            "end_line": 8
+        }
+    }, 
+    {
+        "pk": 42, 
+        "model": "traces.pythonchunk", 
+        "fields": {
+            "start_line": 1, 
+            "end_line": 3
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "traces.resopchunk", 
+        "fields": {}
+    }, 
+    {
+        "pk": 2, 
+        "model": "traces.resopchunk", 
+        "fields": {}
+    }, 
+    {
+        "pk": 4, 
+        "model": "traces.resopchunk", 
+        "fields": {}
+    }, 
+    {
+        "pk": 6, 
+        "model": "traces.resopchunk", 
+        "fields": {}
+    }, 
+    {
+        "pk": 8, 
+        "model": "traces.resopchunk", 
+        "fields": {}
+    }, 
+    {
+        "pk": 10, 
+        "model": "traces.resopchunk", 
+        "fields": {}
+    }, 
+    {
+        "pk": 12, 
+        "model": "traces.resopchunk", 
+        "fields": {}
+    }, 
+    {
+        "pk": 14, 
+        "model": "traces.resopchunk", 
+        "fields": {}
+    }, 
+    {
+        "pk": 15, 
+        "model": "traces.resopchunk", 
+        "fields": {}
+    }, 
+    {
+        "pk": 17, 
+        "model": "traces.resopchunk", 
+        "fields": {}
+    }, 
+    {
+        "pk": 19, 
+        "model": "traces.resopchunk", 
+        "fields": {}
+    }, 
+    {
+        "pk": 21, 
+        "model": "traces.resopchunk", 
+        "fields": {}
+    }, 
+    {
+        "pk": 23, 
+        "model": "traces.resopchunk", 
+        "fields": {}
+    }, 
+    {
+        "pk": 25, 
+        "model": "traces.resopchunk", 
+        "fields": {}
+    }, 
+    {
+        "pk": 27, 
+        "model": "traces.resopchunk", 
+        "fields": {}
+    }, 
+    {
+        "pk": 28, 
+        "model": "traces.resopchunk", 
+        "fields": {}
+    }, 
+    {
+        "pk": 29, 
+        "model": "traces.resopchunk", 
+        "fields": {}
+    }, 
+    {
+        "pk": 31, 
+        "model": "traces.resopchunk", 
+        "fields": {}
+    }, 
+    {
+        "pk": 33, 
+        "model": "traces.resopchunk", 
+        "fields": {}
+    }, 
+    {
+        "pk": 35, 
+        "model": "traces.resopchunk", 
+        "fields": {}
+    }, 
+    {
+        "pk": 36, 
+        "model": "traces.resopchunk", 
+        "fields": {}
+    }, 
+    {
+        "pk": 37, 
+        "model": "traces.resopchunk", 
+        "fields": {}
+    }, 
+    {
+        "pk": 39, 
+        "model": "traces.resopchunk", 
+        "fields": {}
+    }, 
+    {
+        "pk": 41, 
+        "model": "traces.resopchunk", 
+        "fields": {}
+    }, 
+    {
+        "pk": 43, 
+        "model": "traces.resopchunk", 
+        "fields": {}
+    }, 
+    {
+        "pk": 44, 
+        "model": "traces.resopchunk", 
+        "fields": {}
+    }
+]

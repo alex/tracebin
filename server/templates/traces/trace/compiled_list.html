@@ -1,0 +1,18 @@
+{% extends "traces/trace/base.html" %}
+
+{% load trace_helpers %}
+
+{% block page_content %}
+    {% for type, traces in log.traces.all|group_traces_by_type %}
+        <h3>{{ type.description }}</h3>
+        <ul>
+            {% for trace in traces %}
+                <li>
+                    <a href="{% url trace_compiled_detail log.id trace.id %}">
+                        {{ trace|compiled_trace_description }}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endfor %}
+{% endblock %}

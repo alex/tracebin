@@ -1,0 +1,61 @@
+{% extends "traces/trace/base.html" %}
+
+{% load trace_helpers %}
+
+
+{% block page_content %}
+    <h2>Invocation</h2>
+    <pre class="invocation">$ {{ log.command }}</pre>
+    <h4>stdout</h4>
+    <pre class="invocation">{{ log.stdout }}</pre>
+    <h4>stderr</h4>
+    <pre class="invocation">{{ log.stderr }}</pre>
+
+    <h2>Log stats</h2>
+    <ul class="unstyled">
+        {% for stat in log.stats.itervalues %}
+            <li><big>{{ stat.count }}</big> {{ stat.label }}</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Traces compiled</h2>
+    <ul>
+        {% for compiled in log.traces.all %}
+            <li>
+                <a href="{% url trace_compiled_detail log.id compiled.id %}">
+                    {{ compiled|compiled_trace_description }}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <h2>Runtime options</h2>
+    <h5>JIT</h5>
+    <table class="bordered-table">
+        {% for option in log.options.jit.itervalues %}
+            <tr>
+                <th>{{ option.key }}</th>
+                <td>{{ option.value }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+    <h5>GC</h5>
+    <table class="bordered-table">
+        {% for option in log.options.gc.itervalues %}
+            <tr>
+                <th>{{ option.key }}</th>
+                <td>{{ option.value }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+
+    <h2>Build options</h2>
+    <table class="bordered-table">
+        {% for option in log.options.build.itervalues %}
+            <tr>
+                <th>{{ option.key }}</th>
+                <td>{{ option.value }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block page_title %}
+    Trace #{{ log.id }} <small>uploaded by {{ trace.log.full_name|default:"anonymous" }}</small>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="span12">
+            <ul class="tabs">
+                <li{% if page == "overview" %} class="active"{% endif %}>
+                    <a href="{% url trace_overview log.id %}">Overview</a>
+                </li>
+                <li{% if page == "compiled" %} class="active"{% endif %}>
+                    <a href="{% url trace_compiled_list log.id %}">Compiled traces</a>
+                </li>
+                <li>
+                    <a href="{% url trace_timeline log.id %}">Timeline</a>
+                </li>
+                <li class="dropdown pull-right" data-dropdown="dropdown">
+                    <a class="dropdown-toggle">Actions</a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a href="#">Delete</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+
+            {% block page_content %}{% endblock %}
+        </div>
+        <div class="span4" id="sidebar">
+            <div class="page-header">
+                <h3>Key Stats</h3>
+            </div>
+                <dl class="flat">
+                    <dt>Traces compiled:</dt>
+                    <dd>{{ log.stats.traces_compiled.count }}</dd>
+                    <dt>Traces aborted:</dt>
+                    <dd>{{ log.stats.traces_aborted.count }}</dd>
+                </dl>
+
+                <div class="page-header">
+                    <h3>Time breakdown</h3>
+                </div>
+                <ul class="chartlist">
+                    {% for label, percent in log.section_times %}
+                        <li>
+                            <a href="#">{{ label }}</a>
+                            <span class="count">{{ percent|floatformat }}%</span>
+                            <span class="index" style="width: {{ percent }}%">({{ percent }}%)</span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+{% endblock %}
