@@ -14,16 +14,11 @@ class TracebinServer(object):
         self.proc = None
 
     def start(self):
-        # A stupid empty JSON file to appease testever.
-        with tempfile.NamedTemporaryFile(suffix=".json", delete=False) as f:
-            f.write("[]")
-
         self.proc = subprocess.Popen([
             os.path.join(self.venv_dir, "bin", "python"),
             os.path.join(self.server_dir, "manage.py"),
             "development",
             "testserver",
-            f.name,
         ], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         self._check_proc()
         # Give the server time to start up before trying to make a request
