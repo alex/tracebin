@@ -151,8 +151,16 @@ class TestHook(object):
         assert loop.chunks[9].get_op_names() == ["debug_merge_point", "debug_merge_point", "debug_merge_point", "guard_not_invalidated", "getfield_raw", "int_lt", "guard_false", "debug_merge_point", "jump"]
 
     def test_profile(self):
-        def main():
+        def g():
             pass
+
+        def f():
+            g()
+
+        def main():
+            f()
+            f()
+            f()
 
         with tracebin.record() as recorder:
             main()
@@ -163,13 +171,18 @@ class TestHook(object):
         with tracebin.record(profile=True) as recorder:
             main()
 
-        assert len(recorder.calls) == 3
-        [call1, call2, call3] = recorder.calls
+        assert len(recorder.calls) == 2
+        # There are calls to time.time() before and after main, in order to
+        # record the total execution time, for obscure reasons the call after
+        # main isn't recorded by the profiler.
+        [call1, call2] = recorder.calls
 
         assert call1.func_name == "time"
+        assert call1.subcalls == []
 
         assert call2.func_name == "main"
         assert (call2.start_time - start) < 1
         assert (call2.end_time - call2.start_time) < 1
-
-        assert call3.func_name == "time"
+        assert len(call2.subcalls) == 3
+        assert {c.func_name for c in call2.subcalls} == {"f"}
+        assert call2.subcalls[1].subcalls[0].func_name == "g"

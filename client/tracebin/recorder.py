@@ -110,10 +110,10 @@ class Recorder(object):
                 if event_id == CALL_EVENT:
                     func_name_len, = read_unpack("=L", m)
                     func_name = m.read(func_name_len)
-                    stack.append((func_name, timestamp))
+                    stack.append((func_name, timestamp, []))
                 elif event_id == RETURN_EVENT:
                     try:
-                        prev_func_name, prev_timestamp = stack.pop()
+                        prev_func_name, prev_timestamp, subcalls = stack.pop()
                     except IndexError:
                         # The function where the profile hook was enabled
                         # (and everything up the stack from there) will
@@ -121,7 +121,11 @@ class Recorder(object):
                         # them.
                         if not stack:
                             continue
-                    calls.append(PythonCall(prev_func_name, prev_timestamp, timestamp))
+                    call = PythonCall(prev_func_name, prev_timestamp, timestamp, subcalls)
+                    if stack:
+                        stack[-1][2].append(call)
+                    else:
+                        calls.append(call)
 
         self.calls = calls
 
