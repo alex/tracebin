@@ -1,7 +1,8 @@
 from __future__ import print_function
 
-import sys
 import pypyjit
+import sys
+import time
 
 import py
 
@@ -74,7 +75,7 @@ class TestHook(object):
         assert abort.pycode is f.__code__
         # If this fails check to make sure it still matches the line
         # `sys.exc_info`
-        assert abort.lineno == 67
+        assert abort.lineno == 68
 
     def test_code_interpolation(self):
         # This test is pretty fragile, but I don't see how else to make sure we
@@ -98,12 +99,12 @@ class TestHook(object):
             """            i = 1500\n""",
             """            while i > 0:\n"""
         ]
-        assert loop.chunks[1].linenos == [82, 83, 84]
+        assert loop.chunks[1].linenos == [83, 84, 85]
         assert loop.chunks[2].get_op_names() == ["debug_merge_point", "debug_merge_point", "debug_merge_point", "int_gt", "guard_true", "debug_merge_point"]
         assert loop.chunks[3].sourcelines == [
             """                i -= 1\n"""
         ]
-        assert loop.chunks[3].linenos == [85]
+        assert loop.chunks[3].linenos == [86]
         assert loop.chunks[4].get_op_names() == ["debug_merge_point", "debug_merge_point", "debug_merge_point", "int_sub", "debug_merge_point"]
         assert loop.chunks[5].sourcelines == [
             """                i\n"""
@@ -141,10 +142,34 @@ class TestHook(object):
             """        def f(i):\n""",
             """            return i - 1\n""",
         ]
-        assert loop.chunks[5].linenos == [114, 115]
+        assert loop.chunks[5].linenos == [115, 116]
         assert loop.chunks[6].get_op_names() == ["debug_merge_point", "debug_merge_point", "debug_merge_point", "int_sub", "debug_merge_point"]
         assert loop.chunks[7].get_op_names() == ["debug_merge_point"]
         assert loop.chunks[8].sourcelines == [
             """                i\n""",
         ]
         assert loop.chunks[9].get_op_names() == ["debug_merge_point", "debug_merge_point", "debug_merge_point", "guard_not_invalidated", "getfield_raw", "int_lt", "guard_false", "debug_merge_point", "jump"]
+
+    def test_profile(self):
+        def main():
+            pass
+
+        with tracebin.record() as recorder:
+            main()
+
+        assert recorder.calls is None
+
+        start = time.time()
+        with tracebin.record(profile=True) as recorder:
+            main()
+
+        assert len(recorder.calls) == 3
+        [call1, call2, call3] = recorder.calls
+
+        assert call1.func_name == "time"
+
+        assert call2.func_name == "main"
+        assert (call2.start_time - start) < 1
+        assert (call2.end_time - call2.start_time) < 1
+
+        assert call3.func_name == "time"
