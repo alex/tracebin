@@ -23,6 +23,7 @@ class BaseSerializer(object):
         return {
             "traces": [self.visit(trace) for trace in recorder.traces],
             "aborts": [self.visit(abort) for abort in recorder.aborts],
+            "calls": None if recorder.calls is None else [self.visit(call) for call in recorder.calls],
             "options": {k: v.copy() for k, v in recorder.options.iteritems()},
             "runtime": recorder.runtime,
             "stdout": recorder.stdout,
@@ -62,6 +63,15 @@ class BaseSerializer(object):
             "filename": abort.pycode.co_filename,
             "lineno": abort.lineno,
             "reason": abort.reason,
+        }
+
+    def visit_python_call(self, call):
+        return {
+            "type": "python",
+            "func_name": call.func_name,
+            "start_time": call.start_time,
+            "end_time": call.end_time,
+            "subcalls": [self.visit(subcall) for subcall in call.subcalls],
         }
 
 

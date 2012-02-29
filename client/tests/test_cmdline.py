@@ -28,7 +28,7 @@ class TestCommandLine(object):
         )
 
         data = serializer_cls.load(stdout)
-        assert data.viewkeys() == {"stdout", "stderr", "aborts", "runtime", "traces", "options"}
+        assert data.viewkeys() == {"stdout", "stderr", "aborts", "runtime", "traces", "options", "calls"}
         assert len(data["traces"]) == 1
         assert data["stdout"] == ""
         assert data["stderr"] == ""
