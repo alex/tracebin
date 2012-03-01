@@ -1,4 +1,5 @@
 import os
+import random
 import subprocess
 import shutil
 import tempfile
@@ -15,6 +16,7 @@ class TracebinServer(object):
         self.server_dir = server_dir
         self.venv_dir = venv_dir
         self.proc = None
+        self.port = random.randrange(8000, 9000)
 
     def start(self):
         self.proc = subprocess.Popen([
@@ -22,6 +24,7 @@ class TracebinServer(object):
             os.path.join(self.server_dir, "manage.py"),
             "client_test",
             "testserver",
+            "--addrport={:d}".format(self.port)
         ])
         self._check_proc()
         # Give the server time to start up before trying to make a request
@@ -40,10 +43,6 @@ class TracebinServer(object):
     @property
     def host(self):
         return "localhost"
-
-    @property
-    def port(self):
-        return 8000
 
     def write_config(self, tmpdir):
         c = ConfigParser()

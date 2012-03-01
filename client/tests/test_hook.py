@@ -3,6 +3,7 @@ from __future__ import print_function
 import pypyjit
 import sys
 import time
+import threading
 
 import py
 
@@ -10,6 +11,9 @@ import tracebin
 
 
 class TestHook(object):
+    def thread_spawned(self):
+        return threading._counter > 0
+
     def test_record_loop(self):
         def f(n):
             while n > 0:
@@ -75,7 +79,7 @@ class TestHook(object):
         assert abort.pycode is f.__code__
         # If this fails check to make sure it still matches the line
         # `sys.exc_info`
-        assert abort.lineno == 68
+        assert abort.lineno == 72
 
     def test_code_interpolation(self):
         # This test is pretty fragile, but I don't see how else to make sure we
@@ -99,17 +103,20 @@ class TestHook(object):
             """            i = 1500\n""",
             """            while i > 0:\n"""
         ]
-        assert loop.chunks[1].linenos == [83, 84, 85]
+        assert loop.chunks[1].linenos == [87, 88, 89]
         assert loop.chunks[2].get_op_names() == ["debug_merge_point", "debug_merge_point", "debug_merge_point", "int_gt", "guard_true", "debug_merge_point"]
         assert loop.chunks[3].sourcelines == [
             """                i -= 1\n"""
         ]
-        assert loop.chunks[3].linenos == [86]
+        assert loop.chunks[3].linenos == [90]
         assert loop.chunks[4].get_op_names() == ["debug_merge_point", "debug_merge_point", "debug_merge_point", "int_sub", "debug_merge_point"]
         assert loop.chunks[5].sourcelines == [
             """                i\n"""
         ]
-        assert loop.chunks[6].get_op_names() == ["debug_merge_point", "debug_merge_point", "debug_merge_point", "guard_not_invalidated", "getfield_raw", "int_lt", "guard_false", "debug_merge_point", "jump"]
+        if self.thread_spawned():
+            assert loop.chunks[6].get_op_names() == ["debug_merge_point", "debug_merge_point", "debug_merge_point", "guard_not_invalidated", "getfield_raw", "int_sub", "setfield_raw", "int_lt", "guard_false", "debug_merge_point", "jump"]
+        else:
+            assert loop.chunks[6].get_op_names() == ["debug_merge_point", "debug_merge_point", "debug_merge_point", "guard_not_invalidated", "getfield_raw", "int_lt", "guard_false", "debug_merge_point", "jump"]
 
     def test_inlined_function(self):
         def f(i):
@@ -142,13 +149,16 @@ class TestHook(object):
             """        def f(i):\n""",
             """            return i - 1\n""",
         ]
-        assert loop.chunks[5].linenos == [115, 116]
+        assert loop.chunks[5].linenos == [122, 123]
         assert loop.chunks[6].get_op_names() == ["debug_merge_point", "debug_merge_point", "debug_merge_point", "int_sub", "debug_merge_point"]
         assert loop.chunks[7].get_op_names() == ["debug_merge_point"]
         assert loop.chunks[8].sourcelines == [
             """                i\n""",
         ]
-        assert loop.chunks[9].get_op_names() == ["debug_merge_point", "debug_merge_point", "debug_merge_point", "guard_not_invalidated", "getfield_raw", "int_lt", "guard_false", "debug_merge_point", "jump"]
+        if self.thread_spawned():
+            assert loop.chunks[9].get_op_names() == ["debug_merge_point", "debug_merge_point", "debug_merge_point", "guard_not_invalidated", "getfield_raw", "int_sub", "setfield_raw", "int_lt", "guard_false", "debug_merge_point", "jump"]
+        else:
+            assert loop.chunks[9].get_op_names() == ["debug_merge_point", "debug_merge_point", "debug_merge_point", "guard_not_invalidated", "getfield_raw", "int_lt", "guard_false", "debug_merge_point", "jump"]
 
     def test_profile(self):
         def g():
