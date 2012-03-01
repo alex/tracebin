@@ -104,3 +104,32 @@ class UploadLogTests(BaseTraceTests):
         }), content_type="application/json", status_code=302)
         log = Log.objects.get()
         self.assert_attributes(log, command="pypy x.py", runtime=2.3, public=True)
+
+    def test_options(self):
+        response = self.post("trace_upload", data=json.dumps({
+            "command": "pypy x.py",
+            "stdout": "",
+            "stderr": "",
+            "runtime": 2.3,
+            "options": {
+                "build": {
+                    "gc": "minimark",
+                    "gcrootfinder": "asmgcc",
+                    "pypy_version": "1.8",
+                },
+                "jit": {
+                    "trace_limit": 6000,
+                },
+                "gc": {
+                    "PYPY_GC_NURSERY": "4MB",
+                }
+            }
+        }), content_type="application/json", status_code=302)
+        log = Log.objects.get()
+        self.assertQuerysetEqual(log.enviroment_options.order_by("kind", "key"), [
+            (RuntimeEnviroment.BUILD_OPTION, "gc", "minimark"),
+            (RuntimeEnviroment.BUILD_OPTION, "gcrootfinder", "asmgcc"),
+            (RuntimeEnviroment.BUILD_OPTION, "pypy_version", "1.8"),
+            (RuntimeEnviroment.GC_OPTION, "PYPY_GC_NURSERY", "4MB"),
+            (RuntimeEnviroment.JIT_OPTION, "trace_limit", "6000"),
+        ], attrgetter("kind", "key", "value"))

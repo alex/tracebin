@@ -3,7 +3,7 @@ import json
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.csrf import csrf_exempt
 
-from .models import Log
+from .models import Log, RuntimeEnviroment
 
 
 def trace_overview(request, id):
@@ -23,11 +23,21 @@ def trace_upload(request):
     # They're all public=True until we have authentication for the client.
     log = Log.objects.create(
         public=True,
-        command=data["command"],
-        stdout=data["stdout"],
-        stderr=data["stderr"],
-        runtime=data["runtime"],
+        command=data.get("command", u""),
+        stdout=data.get("stdout", u""),
+        stderr=data.get("stderr", u""),
+        runtime=data.get("runtime"),
     )
+    for key, value in data.get("options", {}).iteritems():
+        if key == "jit":
+            kind = RuntimeEnviroment.JIT_OPTION
+        elif key == "gc":
+            kind = RuntimeEnviroment.GC_OPTION
+        elif key == "build":
+            kind = RuntimeEnviroment.BUILD_OPTION
+
+        for key, value in value.iteritems():
+            log.enviroment_options.create(kind=kind, key=key, value=value)
     return redirect(log)
 
 def trace_compiled_list(request, id):
