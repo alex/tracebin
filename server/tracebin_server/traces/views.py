@@ -3,7 +3,7 @@ import json
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.csrf import csrf_exempt
 
-from .models import Log, RuntimeEnviroment
+from .models import Log, RuntimeEnviroment, PythonCall
 
 
 def trace_overview(request, id):
@@ -38,7 +38,31 @@ def trace_upload(request):
 
         for key, value in value.iteritems():
             log.enviroment_options.create(kind=kind, key=key, value=value)
+
+    _add_calls(log, data.get("calls"))
     return redirect(log)
+
+def _add_calls(log, calls, parent=None):
+    if calls is None:
+        return
+    if parent is None:
+        depth = 0
+    else:
+        depth = parent.call_depth + 1
+    for call in calls:
+        kwargs = {
+            "start_time": call["start_time"],
+            "end_time": call["end_time"],
+            "call_depth": depth,
+            "parent": parent,
+            "log": log,
+        }
+        if call["type"] == "python":
+            kwargs["func_name"] = call["func_name"]
+            cls = PythonCall
+        inst = cls.objects.create(**kwargs)
+        _add_calls(log, call["subcalls"], parent=inst)
+
 
 def trace_compiled_list(request, id):
     log = get_object_or_404(Log, id=id)

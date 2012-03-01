@@ -22,6 +22,8 @@ class InheritanceQuerySet(QuerySet):
 
 
 class InheritanceManager(Manager):
+    use_for_related_fields = True
+
     def get_query_set(self):
         qs = InheritanceQuerySet(self.model, using=self._db)
         return qs.select_related(*[rel.var_name for rel in qs._child_rels])

@@ -168,7 +168,7 @@ class Call(models.Model):
     log = models.ForeignKey(Log, related_name="calls")
 
     start_time = models.FloatField()
-    end_times = models.FloatField()
+    end_time = models.FloatField()
     call_depth = models.PositiveIntegerField()
     parent = models.ForeignKey("self", null=True)
 

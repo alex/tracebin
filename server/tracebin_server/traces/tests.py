@@ -4,7 +4,8 @@ from operator import attrgetter
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 
-from .models import Log, RuntimeEnviroment, PythonTrace, RegexTrace, NumPyPyTrace
+from .models import (Log, RuntimeEnviroment, PythonTrace, RegexTrace,
+    NumPyPyTrace, PythonCall)
 
 
 class BaseTraceTests(TestCase):
@@ -133,3 +134,61 @@ class UploadLogTests(BaseTraceTests):
             (RuntimeEnviroment.GC_OPTION, "PYPY_GC_NURSERY", "4MB"),
             (RuntimeEnviroment.JIT_OPTION, "trace_limit", "6000"),
         ], attrgetter("kind", "key", "value"))
+
+    def test_calls(self):
+        response = self.post("trace_upload", data=json.dumps({
+            "command": "pypy x.py",
+            "stdout": "",
+            "stderr": "",
+            "runtime": 2.3,
+            "calls": [
+                {
+                    "type": "python",
+                    "func_name": "time",
+                    "start_time": 0.0,
+                    "end_time": 0.1,
+                    "subcalls": [],
+                },
+                {
+                    "type": "python",
+                    "func_name": "main",
+                    "start_time": 0.11,
+                    "end_time": 2.0,
+                    "subcalls": [
+                        {
+                            "type": "python",
+                            "func_name": "f",
+                            "start_time": .2,
+                            "end_time": .4,
+                            "subcalls": [
+                                {
+                                    "type": "python",
+                                    "func_name": "g",
+                                    "start_time": .25,
+                                    "end_time": .35,
+                                    "subcalls": [],
+                                }
+                            ]
+                        },
+                        {
+                            "type": "python",
+                            "func_name": "h",
+                            "start_time": 1.2,
+                            "end_time": 1.8,
+                            "subcalls": [],
+                        }
+                    ],
+                },
+            ],
+        }), content_type="application/json", status_code=302)
+        log = Log.objects.get()
+        self.assertQuerysetEqual(log.calls.all(), [
+            (PythonCall, log, "time", 0.0, 0.1, 0),
+            (PythonCall, log, "main", 0.11, 2.0, 0),
+            (PythonCall, log, "f", 0.2, 0.4, 1),
+            (PythonCall, log, "g", 0.25, 0.35, 2),
+            (PythonCall, log, "h", 1.2, 1.8, 1),
+        ], attrgetter("__class__", "log", "func_name", "start_time", "end_time", "call_depth"))
+        subcall = log.calls.get(call_depth=2)
+        self.assertEqual(subcall.func_name, "g")
+        self.assertEqual(subcall.parent.func_name, "f")
