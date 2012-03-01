@@ -162,3 +162,17 @@ class ResOpChunk(TraceChunk):
 
 class AssemblerChunk(TraceChunk):
     pass
+
+
+class Call(models.Model):
+    log = models.ForeignKey(Log, related_name="calls")
+
+    start_time = models.FloatField()
+    end_times = models.FloatField()
+    call_depth = models.PositiveIntegerField()
+    parent = models.ForeignKey("self", null=True)
+
+    objects = InheritanceManager()
+
+class PythonCall(Call):
+    func_name = models.CharField(max_length=255)
