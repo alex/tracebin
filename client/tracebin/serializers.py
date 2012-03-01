@@ -1,5 +1,7 @@
 import json
 
+from tracebin.utils import dict_merge
+
 
 class BaseSerializer(object):
     ALL_SERIALIZERS = {}
@@ -13,8 +15,11 @@ class BaseSerializer(object):
         cls.ALL_SERIALIZERS[subcls.name] = subcls
         return subcls
 
-    def get_data(self):
-        return self.visit(self.obj)
+    def get_data(self, extra_data=None):
+        data = self.visit(self.obj)
+        if extra_data is not None:
+            data = dict_merge(extra_data, data)
+        return data
 
     def visit(self, obj):
         return obj.visit(self)
@@ -79,8 +84,8 @@ class BaseSerializer(object):
 class JSONSerializer(BaseSerializer):
     name = "json"
 
-    def dump(self):
-        return json.dumps(self.get_data())
+    def dump(self, **kwargs):
+        return json.dumps(self.get_data(**kwargs))
 
     @classmethod
     def load(cls, data):

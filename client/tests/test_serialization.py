@@ -3,10 +3,8 @@ import sys
 import py
 
 import tracebin
-from tracebin.serializers import JSONSerializer
 
 
-@py.test.mark.parametrize("serializer_cls", [JSONSerializer])
 class TestSerialization(object):
     def test_recorder(self, serializer_cls):
         with tracebin.record() as recorder:

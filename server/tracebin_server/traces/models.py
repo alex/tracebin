@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils.functional import cached_property
 
@@ -15,6 +16,9 @@ class Log(models.Model):
     stderr = models.TextField()
 
     runtime = models.FloatField()
+
+    def get_absolute_url(self):
+        return reverse("trace_overview", kwargs={"id": self.id})
 
     @cached_property
     def options(self):

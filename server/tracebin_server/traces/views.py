@@ -1,4 +1,7 @@
-from django.shortcuts import render, get_object_or_404
+import json
+
+from django.shortcuts import render, get_object_or_404, redirect
+from django.views.decorators.csrf import csrf_exempt
 
 from .models import Log
 
@@ -10,8 +13,22 @@ def trace_overview(request, id):
         "log": log,
     })
 
+@csrf_exempt
 def trace_upload(request):
-    pass
+    if request.method == "GET":
+        return render(request, "traces/trace/new.html")
+    assert request.method == "POST"
+    assert request.META["CONTENT_TYPE"] == "application/json"
+    data = json.loads(request.raw_post_data)
+    # They're all public=True until we have authentication for the client.
+    log = Log.objects.create(
+        public=True,
+        command=data["command"],
+        stdout=data["stdout"],
+        stderr=data["stderr"],
+        runtime=data["runtime"],
+    )
+    return redirect(log)
 
 def trace_compiled_list(request, id):
     log = get_object_or_404(Log, id=id)

@@ -1,11 +1,37 @@
+import json
 from operator import attrgetter
 
+from django.core.urlresolvers import reverse
 from django.test import TestCase
 
 from .models import Log, RuntimeEnviroment, PythonTrace, RegexTrace, NumPyPyTrace
 
 
 class BaseTraceTests(TestCase):
+    def _request(self, method, url_name, url_kwargs, **kwargs):
+        status_code = url_kwargs.pop("status_code", 200)
+        url = reverse(url_name, kwargs=url_kwargs)
+        response = getattr(self.client, method)(url, **kwargs)
+        self.assertEqual(response.status_code, status_code)
+        return response
+
+    def get(self, url_name, **kwargs):
+        return self._request("get", url_name, url_kwargs=kwargs)
+
+    def post(self, url_name, **kwargs):
+        url_kwargs = kwargs
+        kwargs = {}
+        for key in ["data", "content_type"]:
+            if key in url_kwargs:
+                kwargs[key] = url_kwargs.pop(key)
+        return self._request("post", url_name, url_kwargs=url_kwargs, **kwargs)
+
+
+    def assert_attributes(self, obj, **kwargs):
+        for attr, value in kwargs.iteritems():
+            self.assertEqual(getattr(obj, attr), value)
+
+
     def create_log(self):
         defaults = {
             "runtime": 42,
@@ -64,3 +90,17 @@ class LogTests(BaseTraceTests):
             ("a", 75),
             ("b", 25),
         ])
+
+class UploadLogTests(BaseTraceTests):
+    def test_get_page(self):
+        self.get("trace_upload")
+
+    def test_simple_upload(self):
+        response = self.post("trace_upload", data=json.dumps({
+            "command": "pypy x.py",
+            "stdout": "",
+            "stderr": "",
+            "runtime": 2.3
+        }), content_type="application/json", status_code=302)
+        log = Log.objects.get()
+        self.assert_attributes(log, command="pypy x.py", runtime=2.3, public=True)

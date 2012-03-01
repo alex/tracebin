@@ -3,8 +3,11 @@ import subprocess
 import shutil
 import tempfile
 import time
+from ConfigParser import ConfigParser
 
 import requests
+
+from tracebin.serializers import JSONSerializer
 
 
 class TracebinServer(object):
@@ -17,13 +20,13 @@ class TracebinServer(object):
         self.proc = subprocess.Popen([
             os.path.join(self.venv_dir, "bin", "python"),
             os.path.join(self.server_dir, "manage.py"),
-            "development",
+            "client_test",
             "testserver",
-        ], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        ])
         self._check_proc()
         # Give the server time to start up before trying to make a request
         # against it.
-        time.sleep(.5)
+        time.sleep(12)
 
     def shutdown(self):
         if self.proc is not None:
@@ -34,9 +37,26 @@ class TracebinServer(object):
         status = self.proc.poll()
         assert status is None
 
+    @property
+    def host(self):
+        return "localhost"
+
+    @property
+    def port(self):
+        return 8000
+
+    def write_config(self, tmpdir):
+        c = ConfigParser()
+        c.add_section("server")
+        c.set("server", "host", self.host)
+        c.set("server", "port", self.port)
+        with tmpdir.join("config.ini").open("w") as f:
+            c.write(f)
+        return f.name
+
     def get(self, path):
         self._check_proc()
-        return requests.get("http://localhost:8000" + path)
+        return requests.get("http://{}:{}{}".format(self.host, self.port, path))
 
 
 def pytest_funcarg__server(request):
@@ -47,7 +67,7 @@ def pytest_funcarg__server(request):
         "virtualenv", "-p", "/usr/bin/python", venv_dir
     ])
     subprocess.check_call([
-        os.path.join(venv_dir, "bin", "pip"), "install", "-r", os.path.join(server_dir, "requirements", "development.txt")
+        os.path.join(venv_dir, "bin", "pip"), "install", "-r", os.path.join(server_dir, "requirements", "production.txt")
     ])
     server = TracebinServer(server_dir, venv_dir)
 
@@ -56,3 +76,7 @@ def pytest_funcarg__server(request):
 
     server.start()
     return server
+
+def pytest_generate_tests(metafunc):
+    if "serializer_cls" in metafunc.funcargnames:
+        metafunc.parametrize("serializer_cls", [JSONSerializer])

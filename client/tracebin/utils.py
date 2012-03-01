@@ -6,3 +6,9 @@ def read_unpack(fmt, file):
     # position in the file
     size = struct.calcsize(fmt)
     return struct.unpack(fmt, file.read(size))
+
+def dict_merge(*dicts):
+    result = {}
+    for d in dicts:
+        result.update(d)
+    return result
