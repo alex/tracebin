@@ -52,7 +52,7 @@ class BaseSerializer(object):
     def visit_resop_chunk(self, chunk):
         return {
             "type": "resop",
-            "ops": u"\n".join(repr(op for op in chunk.ops))
+            "ops": u"\n".join(repr(op) for op in chunk.ops)
         }
 
     def visit_python_chunk(self, chunk):
