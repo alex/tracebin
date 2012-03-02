@@ -9,6 +9,7 @@ import requests
 
 from tracebin.recorder import record
 from tracebin.serializers import BaseSerializer
+from tracebin.utils import get_current_command
 
 
 def main(argv):
@@ -33,13 +34,15 @@ def main(argv):
         with args.config:
             config.readfp(args.config)
 
+    command = get_current_command()
+
     with record() as recorder:
         runpy.run_path(args.file, run_name="__main__")
 
     serializer_cls = BaseSerializer.ALL_SERIALIZERS[args.dump_format if args.dump_format else "json"]
     serializer = serializer_cls(recorder)
 
-    dump = serializer.dump(extra_data={"command": [sys.executable] + argv})
+    dump = serializer.dump(extra_data={"command": command})
     if args.action == "dump":
         print(dump)
     elif args.action == "upload":
