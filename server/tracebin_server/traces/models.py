@@ -126,8 +126,14 @@ class TraceSection(models.Model):
         (LOOP_BODY, "Loop body"),
     ]
 
+    ordering = models.IntegerField()
     trace = models.ForeignKey(BaseTrace, related_name="sections")
     label = models.IntegerField(choices=LABEL_CHOICES)
+
+    class Meta:
+        unique_together = [
+            ("ordering", "trace")
+        ]
 
 class TraceChunk(models.Model):
     section = models.ForeignKey(TraceSection, related_name="chunks")

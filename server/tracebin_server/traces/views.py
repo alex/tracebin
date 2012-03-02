@@ -3,7 +3,8 @@ import json
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.csrf import csrf_exempt
 
-from .models import Log, RuntimeEnviroment, PythonCall
+from .models import (Log, RuntimeEnviroment, PythonTrace, TraceSection,
+    ResOpChunk, PythonChunk, PythonCall)
 
 
 def trace_overview(request, id):
@@ -38,6 +39,40 @@ def trace_upload(request):
 
         for key, value in value.iteritems():
             log.enviroment_options.create(kind=kind, key=key, value=value)
+
+    for trace in data.get("traces", []):
+        kwargs = {"log": log}
+        if trace["type"] == "python":
+            kwargs["root_file"] = trace["root_file"]
+            kwargs["root_function"] = trace["root_function"]
+            cls = PythonTrace
+
+        trace_obj = cls.objects.create(**kwargs)
+        for i, section in enumerate(trace["sections"]):
+            if section["label"] == "Entry":
+                label = TraceSection.ENTRY
+            elif section["label"] == "Preamble":
+                label = TraceSection.PREAMBLE
+            elif section["label"] == "Loop body":
+                label = TraceSection.LOOP_BODY
+
+            section_obj = trace_obj.sections.create(ordering=i, label=label)
+            for i, chunk in enumerate(section["chunks"]):
+                kwargs = {
+                    "section": section_obj,
+                    "ordering": i,
+                }
+                if chunk["type"] == "resop":
+                    cls = ResOpChunk
+                    kwargs["raw_source"] = chunk["ops"]
+                elif chunk["type"] == "python":
+                    cls = PythonChunk
+                    kwargs["raw_source"] = chunk["source"]
+                    assert sorted(chunk["linenos"]) == chunk["linenos"]
+                    kwargs["start_line"] = chunk["linenos"][0]
+                    kwargs["end_line"] = chunk["linenos"][-1] + 1
+                cls.objects.create(**kwargs)
+
 
     _add_calls(log, data.get("calls"))
     return redirect(log)

@@ -5,7 +5,7 @@ from django.core.urlresolvers import reverse
 from django.test import TestCase
 
 from .models import (Log, RuntimeEnviroment, PythonTrace, RegexTrace,
-    NumPyPyTrace, PythonCall)
+    NumPyPyTrace, TraceSection, ResOpChunk, PythonChunk, PythonCall)
 
 
 class BaseTraceTests(TestCase):
@@ -192,3 +192,60 @@ class UploadLogTests(BaseTraceTests):
         subcall = log.calls.get(call_depth=2)
         self.assertEqual(subcall.func_name, "g")
         self.assertEqual(subcall.parent.func_name, "f")
+
+    def test_trace(self):
+        response = self.post("trace_upload", data=json.dumps({
+            "command": "pypy x.py",
+            "stdout": "",
+            "stderr": "",
+            "runtime": 2.3,
+            "calls": None,
+            "traces": [
+                {
+                    "type": "python",
+                    "root_file": "x.py",
+                    "root_function": "main",
+                    "sections": [
+                        {
+                            "label": "Entry",
+                            "chunks": [],
+                        },
+                        {
+                            "label": "Preamble",
+                            "chunks": [],
+                        },
+                        {
+                            "label": "Loop body",
+                            "chunks": [
+                                {
+                                    "type": "resop",
+                                    "ops": "label(i1, i2, descr=TargetToken(700)",
+                                },
+                                {
+                                    "type": "python",
+                                    "linenos": [87, 88, 89],
+                                    "source": "        def f():\n            i = 1500\n            while i > 0:\n"
+                                }
+                            ]
+                        }
+                    ],
+                }
+            ],
+        }), content_type="application/json", status_code=302)
+
+        log = Log.objects.get()
+        trace = log.traces.get()
+        self.assert_attributes(trace, root_function="main", root_file="x.py", __class__=PythonTrace)
+        self.assertQuerysetEqual(trace.sections.all(), [
+            (0, TraceSection.ENTRY),
+            (1, TraceSection.PREAMBLE),
+            (2, TraceSection.LOOP_BODY),
+        ], attrgetter("ordering", "label"))
+        section = trace.sections.get(label=TraceSection.LOOP_BODY)
+        self.assertQuerysetEqual(section.chunks.all(), [
+            (ResOpChunk, 0, "label(i1, i2, descr=TargetToken(700)"),
+            (PythonChunk, 1, "        def f():\n            i = 1500\n            while i > 0:\n"),
+        ], attrgetter("__class__", "ordering", "raw_source"))
+
+        chunk = section.chunks.get(ordering=1)
+        self.assert_attributes(chunk, start_line=87, end_line=90)
