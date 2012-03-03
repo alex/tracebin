@@ -196,3 +196,22 @@ class TestHook(object):
         assert len(call2.subcalls) == 3
         assert {c.func_name for c in call2.subcalls} == {"f"}
         assert call2.subcalls[1].subcalls[0].func_name == "g"
+
+    def test_profile_exception(self):
+        def f():
+            raise ValueError
+
+        def main():
+            try:
+                f()
+            except ValueError:
+                pass
+
+        with tracebin.record(profile=True) as recorder:
+            main()
+
+        [_, call] = recorder.calls
+
+        assert call.func_name == "main"
+        [subcall] = call.subcalls
+        assert subcall.func_name == "f"

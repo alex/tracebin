@@ -159,6 +159,8 @@ class Recorder(object):
         elif event == "return" or event == "c_return":
             event_id = RETURN_EVENT
             content = struct.pack("=BBd", PROFILE_IDENTIFIER, event_id, time.time())
+        elif event == "exception" or event == "c_exception":
+            return
         else:
             self.log.warning("[profile] Unknown event: %s" % event)
             return
