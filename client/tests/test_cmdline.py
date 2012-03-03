@@ -5,33 +5,10 @@ import urlparse
 
 import py
 
+from tracebin import cmdline
+
 
 class TestCommandLine(object):
-    def test_module_executability(self, tmpdir, serializer_cls):
-        tmpdir.join("t.py").write(textwrap.dedent("""
-        import sys
-
-        def main():
-            for i in xrange(1500):
-                pass
-
-        if __name__ == "__main__":
-            main()
-        else:
-            sys.exit(__name__)
-        """))
-
-        stdout = subprocess.check_output(
-            [sys.executable, "-mtracebin", str(tmpdir.join("t.py")), "--action=dump", "--dump-format={}".format(serializer_cls.name)],
-        )
-
-        data = serializer_cls.load(stdout)
-        assert data.viewkeys() == {"stdout", "stderr", "aborts", "runtime", "traces", "options", "calls", "command"}
-        assert len(data["traces"]) == 1
-        assert data["stdout"] == ""
-        assert data["stderr"] == ""
-        assert data["aborts"] == []
-
     def test_upload(self, tmpdir, server):
         tmpdir.join("t.py").write(textwrap.dedent("""
         import sys
@@ -56,3 +33,55 @@ class TestCommandLine(object):
 
         response = server.get(url.path)
         assert response.status_code == 200
+
+    def test_dump(self, tmpdir, capsys, serializer_cls):
+        tmpdir.join("t.py").write(textwrap.dedent("""
+        import sys
+
+        def main():
+            for i in xrange(1500):
+                pass
+
+        if __name__ == "__main__":
+            main()
+        else:
+            sys.exit(__name__)
+        """))
+
+        res = cmdline.main(
+            [sys.executable, str(tmpdir.join("t.py")), "--action=dump", "--dump-format={}".format(serializer_cls.name)]
+        )
+        assert res == 0
+
+        stdout, stderr = capsys.readouterr()
+        assert not stderr
+        data = serializer_cls.load(stdout)
+        assert data.viewkeys() == {"stdout", "stderr", "aborts", "runtime", "traces", "options", "calls", "command"}
+        assert len(data["traces"]) == 1
+        assert data["stdout"] == ""
+        assert data["stderr"] == ""
+        assert data["aborts"] == []
+        assert data["calls"] is None
+
+    def test_profile(self, tmpdir, capsys, serializer_cls):
+        tmpdir.join("t.py").write(textwrap.dedent("""
+        def add(x, y):
+            return x + y
+
+        def main():
+            i = 0
+            while i < 1500:
+                i = add(i, 1)
+
+        if __name__ == "__main__":
+            main()
+        """))
+
+        res = cmdline.main(
+            [sys.executable, str(tmpdir.join("t.py")), "--action=dump", "--dump-format={}".format(serializer_cls.name), "--profile"]
+        )
+        assert res == 0
+
+        stdout, stderr = capsys.readouterr()
+        data = serializer_cls.load(stdout)
+        assert data["calls"] is not None

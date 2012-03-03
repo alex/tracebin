@@ -19,6 +19,9 @@ def main(argv):
     parser.add_argument(
         "--action", choices={"upload", "dump"}, default="upload",
     )
+    parser.add_argument(
+        "--profile", action="store_true",
+    )
 
     parser.add_argument(
         "--dump-format", choices=BaseSerializer.ALL_SERIALIZERS.viewkeys(),
@@ -36,7 +39,7 @@ def main(argv):
 
     command = get_current_command()
 
-    with record() as recorder:
+    with record(profile=args.profile) as recorder:
         runpy.run_path(args.file, run_name="__main__")
 
     serializer_cls = BaseSerializer.ALL_SERIALIZERS[args.dump_format if args.dump_format else "json"]
