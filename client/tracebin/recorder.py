@@ -159,6 +159,9 @@ class Recorder(object):
         elif event == "return" or event == "c_return":
             event_id = RETURN_EVENT
             content = struct.pack("=BBd", PROFILE_IDENTIFIER, event_id, time.time())
+        else:
+            self.log.warning("[profile] Unknown event: %s" % event)
+            return
 
         if self._current_profile_mmap.tell() + len(content) > len(self._current_profile_mmap):
             self._new_mmap()
