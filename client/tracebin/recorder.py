@@ -149,16 +149,17 @@ class Recorder(object):
             self.log.warning("[abort] Unhandled jitdriver: %s" % jitdriver_name)
 
     def on_profile(self, frame, event, arg):
+        timestamp = time.time()
         if event == "call" or event == "c_call":
             event_id = CALL_EVENT
             if event == "call":
                 target = frame.f_code.co_name
             elif event == "c_call":
                 target = arg.__name__
-            content = struct.pack("=BBdL", PROFILE_IDENTIFIER, event_id, time.time(), len(target)) + target
+            content = struct.pack("=BBdL", PROFILE_IDENTIFIER, event_id, timestamp, len(target)) + target
         elif event == "return" or event == "c_return":
             event_id = RETURN_EVENT
-            content = struct.pack("=BBd", PROFILE_IDENTIFIER, event_id, time.time())
+            content = struct.pack("=BBd", PROFILE_IDENTIFIER, event_id, timestamp)
         elif event == "exception" or event == "c_exception":
             return
         else:
