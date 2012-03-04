@@ -32,23 +32,23 @@ class PythonTrace(BaseTrace):
     @classmethod
     def split_section(cls, ops):
         chunks = []
-        cls._split_section(ops, i=0, call_depth=0, chunks=chunks)
+        cls._split_section(ops, i=0, call_id=0, chunks=chunks)
         return chunks
 
     @classmethod
-    def _split_section(cls, ops, i, call_depth, chunks):
+    def _split_section(cls, ops, i, call_id, chunks):
         start_idx = i
         current_line = None
 
         while i < len(ops):
             op = ops[i]
             if op.name == "debug_merge_point":
-                if op.call_depth > call_depth:
+                if op.call_id > call_id:
                     chunks.append(
                         ResOpChunk(ops[start_idx:i])
                     )
-                    i = start_idx = cls._split_section(ops, i, op.call_depth, chunks)
-                elif op.call_depth < call_depth:
+                    i = start_idx = cls._split_section(ops, i, op.call_id, chunks)
+                elif op.call_id < call_id:
                     chunks.append(
                         ResOpChunk(ops[start_idx:i])
                     )
@@ -65,7 +65,7 @@ class PythonTrace(BaseTrace):
                             )
                         lines_end = py_op.lineno - startline
                         if current_line is None:
-                            source = sourcecode[:lines_end+1]
+                            source = sourcecode[:lines_end + 1]
                             linenos = range(startline, py_op.lineno + 1)
                         else:
                             source = [sourcecode[lines_end]]
@@ -74,7 +74,9 @@ class PythonTrace(BaseTrace):
                         current_line = py_op.lineno
                         start_idx = i
             i += 1
-        chunks.append(ResOpChunk(ops[start_idx:]))
+        if start_idx < len(ops):
+            chunks.append(ResOpChunk(ops[start_idx:]))
+        return i
 
     def visit(self, visitor):
         return visitor.visit_python_trace(self)

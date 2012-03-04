@@ -215,3 +215,32 @@ class TestHook(object):
         assert call.func_name == "main"
         [subcall] = call.subcalls
         assert subcall.func_name == "f"
+
+    def test_trace_profilehook(self):
+        def profile(frame, event, arg):
+            pass
+        def sub(x, y):
+            return x - y
+        def main():
+            i = 1500
+            orig_profile = sys.getprofile()
+            sys.setprofile(profile)
+            try:
+                while i > 0:
+                    i = sub(i, 1)
+            finally:
+                sys.setprofile(orig_profile)
+
+        with tracebin.record() as recorder:
+            main()
+
+        [trace] = recorder.traces
+        [_, _, loop] = trace.sections
+
+        py_profile_chunk = loop.chunks[9]
+        assert py_profile_chunk.sourcelines == [
+            """        def profile(frame, event, arg):\n""",
+            """            pass\n""",
+        ]
+        op_profile_chunk = loop.chunks[10]
+        assert op_profile_chunk.get_op_names() == ["debug_merge_point", "debug_merge_point"]
