@@ -48,5 +48,5 @@ class TestSerialization(object):
         dump = serializer.dump()
         data = serializer.load(dump)
 
-        assert len(data["calls"]) == 2
+        assert len(data["calls"]) == 3
         assert len(data["calls"][1]["subcalls"]) == 3

@@ -67,7 +67,8 @@ class Recorder(object):
         self._start_time = time.time()
 
     def disable(self, profile):
-        self.runtime = time.time() - self._start_time
+        self._end_time = time.time()
+        self.runtime = self._end_time - self._start_time
         del self._start_time
 
         if profile:
@@ -85,6 +86,7 @@ class Recorder(object):
 
         if profile:
             self._find_calls()
+        del self._end_time
 
     def _new_mmap(self):
         self._current_profile_mmap = mmap.mmap(-1, 4 * 1024 * 1024)
@@ -127,6 +129,14 @@ class Recorder(object):
                     else:
                         calls.append(call)
 
+        while stack:
+            prev_func_name, prev_timestamp, subcalls = stack.pop()
+            call = PythonCall(prev_func_name, prev_timestamp, self._end_time, subcalls)
+            if stack:
+                stack[-1][2].append(call)
+            else:
+                calls.append(call)
+
         self.calls = calls
 
     def on_compile(self, jitdriver_name, kind, greenkey, ops, asm_ptr, asm_len):
@@ -156,18 +166,20 @@ class Recorder(object):
                 target = frame.f_code.co_name
             elif event == "c_call":
                 target = arg.__name__
-            content = struct.pack("=BBdL", PROFILE_IDENTIFIER, event_id, timestamp, len(target)) + target
+            content = struct.pack("=dL", timestamp, len(target)) + target
         elif event == "return" or event == "c_return":
             event_id = RETURN_EVENT
-            content = struct.pack("=BBd", PROFILE_IDENTIFIER, event_id, timestamp)
+            content = struct.pack("=d", timestamp)
         elif event == "exception" or event == "c_exception":
             return
         else:
             self.log.warning("[profile] Unknown event: %s" % event)
             return
 
-        if self._current_profile_mmap.tell() + len(content) > len(self._current_profile_mmap):
+        if self._current_profile_mmap.tell() + len(content) + 2 > len(self._current_profile_mmap):
             self._new_mmap()
+        self._current_profile_mmap.write_byte(chr(PROFILE_IDENTIFIER))
+        self._current_profile_mmap.write_byte(chr(event_id))
         self._current_profile_mmap.write(content)
 
     def visit(self, visitor):

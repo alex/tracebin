@@ -181,11 +181,10 @@ class TestHook(object):
         with tracebin.record(profile=True) as recorder:
             main()
 
-        assert len(recorder.calls) == 2
+        assert len(recorder.calls) == 3
         # There are calls to time.time() before and after main, in order to
-        # record the total execution time, for obscure reasons the call after
-        # main isn't recorded by the profiler.
-        [call1, call2] = recorder.calls
+        # record the total execution time
+        [call1, call2, call3] = recorder.calls
 
         assert call1.func_name == "time"
         assert call1.subcalls == []
@@ -210,7 +209,7 @@ class TestHook(object):
         with tracebin.record(profile=True) as recorder:
             main()
 
-        [_, call] = recorder.calls
+        [_, call, _] = recorder.calls
 
         assert call.func_name == "main"
         [subcall] = call.subcalls
