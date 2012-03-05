@@ -1,5 +1,6 @@
 import json
 
+from django.db import transaction
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.csrf import csrf_exempt
 
@@ -15,6 +16,7 @@ def trace_overview(request, id):
     })
 
 @csrf_exempt
+@transaction.commit_on_success
 def trace_upload(request):
     if request.method == "GET":
         return render(request, "traces/trace/new.html")
