@@ -33,11 +33,11 @@ class PythonTrace(BaseTrace):
     @classmethod
     def split_section(cls, ops):
         chunks = []
-        cls._split_section(ops, i=0, call_id=0, chunks=chunks)
+        cls._split_section(ops, i=0, call_id=0, chunks=chunks, dis_cache={})
         return chunks
 
     @classmethod
-    def _split_section(cls, ops, i, call_id, chunks):
+    def _split_section(cls, ops, i, call_id, chunks, dis_cache):
         start_idx = i
         current_line = None
 
@@ -48,14 +48,16 @@ class PythonTrace(BaseTrace):
                     chunks.append(
                         ResOpChunk(ops[start_idx:i])
                     )
-                    i = start_idx = cls._split_section(ops, i, op.call_id, chunks)
+                    i = start_idx = cls._split_section(ops, i, op.call_id, chunks, dis_cache)
                 elif op.call_id < call_id:
                     chunks.append(
                         ResOpChunk(ops[start_idx:i])
                     )
                     return i
                 else:
-                    code = disassembler.dis(op.pycode)
+                    if op.pycode not in dis_cache:
+                        dis_cache[op.pycode] = disassembler.dis(op.pycode)
+                    code = dis_cache[op.pycode]
                     py_op = code.map[op.bytecode_no]
                     sourcecode, startline = inspect.getsourcelines(code.co)
 
