@@ -167,7 +167,7 @@ class Recorder(object):
             elif event == "c_call":
                 target = arg.__name__
             content = struct.pack("=dL", timestamp, len(target)) + target
-        elif event == "return" or event == "c_return":
+        elif event == "return" or event == "c_return" or event == "c_exception":
             event_id = RETURN_EVENT
             content = struct.pack("=d", timestamp)
         elif event == "exception" or event == "c_exception":

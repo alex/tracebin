@@ -215,6 +215,20 @@ class TestHook(object):
         [subcall] = call.subcalls
         assert subcall.func_name == "f"
 
+    def test_profile_builtin_exception(self):
+        import math
+
+        with tracebin.record(profile=True) as recorder:
+            try:
+                math.sqrt("a")
+            except TypeError:
+                pass
+
+        [_, call, _] = recorder.calls
+
+        assert call.func_name == "sqrt"
+        assert call.subcalls == []
+
     def test_trace_profilehook(self):
         def profile(frame, event, arg):
             pass
