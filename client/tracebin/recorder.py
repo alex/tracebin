@@ -1,3 +1,4 @@
+import ctypes
 import io
 import inspect
 import mmap
@@ -30,7 +31,8 @@ def record(**kwargs):
 class Recorder(object):
     def __init__(self):
         self.log = Logger()
-        self.traces = []
+        self._traces = []
+        self._pending_traces = []
         self.aborts = []
         self.calls = None
         self.options = {
@@ -87,6 +89,14 @@ class Recorder(object):
         if profile:
             self._find_calls()
         del self._end_time
+
+    @property
+    def traces(self):
+        for data in self._pending_traces:
+            cls, args = data[0], data[1:]
+            self._traces.append(cls(*args))
+        del self._pending_traces[:]
+        return self._traces
 
     def _new_mmap(self):
         self._current_profile_mmap = mmap.mmap(-1, 4 * 1024 * 1024)
@@ -145,7 +155,9 @@ class Recorder(object):
             return
 
         if jitdriver_name == "pypyjit":
-            self.traces.append(PythonTrace(greenkey, ops, asm_ptr, asm_len))
+            self._pending_traces.append(
+                (PythonTrace, greenkey, ops, ctypes.string_at(asm_ptr, asm_len))
+            )
         else:
             self.log.warning("[compile] Unhandled jitdriver: %s" % jitdriver_name)
 

@@ -4,8 +4,9 @@ import disassembler
 
 
 class BaseTrace(object):
-    def __init__(self, ops):
+    def __init__(self, ops, asm):
         super(BaseTrace, self).__init__()
+        self.asm = asm
         self.sections = [
             TraceSection(label, self.split_section(ops))
             for label, ops in self.split_trace(ops)
@@ -24,8 +25,8 @@ class BaseTrace(object):
         return sections
 
 class PythonTrace(BaseTrace):
-    def __init__(self, greenkey, ops, asm_start, asm_len):
-        super(PythonTrace, self).__init__(ops)
+    def __init__(self, greenkey, ops, asm):
+        super(PythonTrace, self).__init__(ops, asm)
         self.root_file = greenkey[0].co_filename
         self.root_function = greenkey[0].co_name
 
