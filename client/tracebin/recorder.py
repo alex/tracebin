@@ -30,7 +30,7 @@ def record(**kwargs):
 
 class Recorder(object):
     def __init__(self):
-        self.log = Logger()
+        self.log = Logger("tracebin.Recorder")
         self._traces = []
         self._pending_traces = []
         self.aborts = []
