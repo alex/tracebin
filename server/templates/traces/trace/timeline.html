@@ -124,7 +124,7 @@
                     return x(d.start_time);
                 })
                 .attr("width", function(d) {
-                    return x(d.end_time - d.start_time + d3.min(dataset, attrgetter("start_time")));
+                    return x(d.end_time) - x(d.start_time);
                 })
                 .attr("y", function(d) {
                     return y(d.depth);
