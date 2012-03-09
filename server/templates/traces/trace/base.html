@@ -14,7 +14,7 @@
                 <li{% if page == "compiled" %} class="active"{% endif %}>
                     <a href="{% url trace_compiled_list log.id %}">Compiled traces</a>
                 </li>
-                <li>
+                <li{% if page == "timeline" %} class="active"{% endif %}>
                     <a href="{% url trace_timeline log.id %}">Timeline</a>
                 </li>
                 <li class="dropdown pull-right" data-dropdown="dropdown">

@@ -1,0 +1,150 @@
+{% extends "traces/trace/base.html" %}
+
+{% load trace_helpers %}
+
+{% block page_content %}
+    <script type="text/javascript" src="{{ STATIC_URL }}js/d3.v2.min.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        var dataset = [
+            {% for call in log.calls.all %}
+                {
+                    depth: {{ call.call_depth }},
+                    name: "{{ call.func_name }}",
+                    start_time: {{ call.start_time }},
+                    end_time: {{ call.end_time }},
+                }{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ];
+    </script>
+    <script type="text/javascript">
+        var attrgetter = function(name) {
+            return function(obj) {
+                return obj[name];
+            };
+        };
+        var hsv_to_rgb = function(h, s, v) {
+            // Adapted from Python's colorsys module.
+            var r, g, b;
+            if (s === 0.0) {
+                r = g = b = v;
+            }
+            else {
+                var i = ~~(h * 6.0);
+                var f = h * 6.0 - i;
+                var p = v * (1.0 - s);
+                var q = v * (1.0 - s * f);
+                var t = v * (1.0 - s * (1.0 - f));
+                switch (i % 6) {
+                    case 0: {
+                        r = v;
+                        g = t;
+                        b = p;
+                        break;
+                    }
+                    case 1: {
+                        r = q;
+                        g = v;
+                        b = p;
+                        break;
+                    }
+                    case 2: {
+                        r = p;
+                        g = v;
+                        b = t;
+                        break;
+                    }
+                    case 3: {
+                        r = p;
+                        g = q;
+                        b = v;
+                        break;
+                    }
+                    case 4: {
+                        r = t;
+                        g = p;
+                        b = v;
+                        break;
+                    }
+                    case 5: {
+                        r = v;
+                        g = p;
+                        b = q;
+                        break;
+                    }
+                }
+            }
+
+            var vv = function(v) {
+                return Math.round(v * 255);
+            };
+
+            return d3.rgb(vv(r), vv(g), vv(b));
+        };
+
+        var colorgenerator = function(func) {
+            // Based on code provided by Marty Alchin.
+            var seen = {};
+            var i = 0;
+            return function(obj) {
+                var label = func(obj);
+                if (!(label in seen)) {
+                    var h = i * .15;
+                    var s = .3 + ((i * .15) % .7);
+                    var v = .3 + (((i + 3) * .15) % .7);
+                    i++;
+                    seen[label] = hsv_to_rgb(h, s, v);
+                }
+                return seen[label];
+            };
+        };
+
+        $(function() {
+            var h = 150;
+            var w = 600;
+            var x = d3.scale.linear()
+                .domain([
+                    d3.min(dataset, attrgetter("start_time")),
+                    d3.max(dataset, attrgetter("end_time"))
+                ])
+                .range([0, w]);
+            var y = d3.scale.ordinal()
+                .domain(dataset.map(attrgetter("depth")))
+                .rangeBands([0, h]);
+
+            var svg = d3.select("#timeline #visualization").append("svg")
+                .attr("height", h)
+                .attr("width", w);
+
+            svg.selectAll("rect")
+                .data(dataset)
+                .enter()
+                .append("rect")
+                .attr("x", function(d) {
+                    return x(d.start_time);
+                })
+                .attr("width", function(d) {
+                    return x(d.end_time - d.start_time + d3.min(dataset, attrgetter("start_time")));
+                })
+                .attr("y", function(d) {
+                    return y(d.depth);
+                })
+                .attr("height", y.rangeBand())
+                .attr("fill", colorgenerator(attrgetter("name")))
+                .attr("stroke", "black")
+                .attr("stroke-width", 2)
+                .on("mouseover", function(d) {
+                    $("#timeline #current-function").html("<p>Current function: "
+                        + d.name + "</p>");
+                })
+                .on("mouseout", function(d) {
+                    return $("#timeline #current-function").html("");
+                })
+        });
+    </script>
+    <div id="timeline">
+        <div id="visualization"></div>
+        <div id="current-function"></div>
+    </div>
+
+{% endblock %}

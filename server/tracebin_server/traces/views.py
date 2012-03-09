@@ -109,7 +109,11 @@ def trace_compiled_list(request, id):
     })
 
 def trace_timeline(request, id):
-    pass
+    log = get_object_or_404(Log, id=id)
+    return render(request, "traces/trace/timeline.html", {
+        "page": "timeline",
+        "log": log,
+    })
 
 def trace_compiled_detail(request, id, compiled_id):
     log = get_object_or_404(Log, id=id)
