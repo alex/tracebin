@@ -29,7 +29,7 @@ class TracebinServer(object):
         self._check_proc()
         # Give the server time to start up before trying to make a request
         # against it.
-        time.sleep(12)
+        time.sleep(18)
 
     def shutdown(self):
         if self.proc is not None:
