@@ -32,8 +32,15 @@ def main(argv):
     if args.action != "dump" and args.dump_format:
         parser.error()
 
+    config = ConfigParser()
+
+    # Setup some defaults, eventually there should be some sort of better
+    # abstraction for this.
+    config.add_section("server")
+    config.set("server", "host", "localhost")
+    config.set("server", "port", "8000")
+
     if args.config:
-        config = ConfigParser()
         with args.config:
             config.readfp(args.config)
 
