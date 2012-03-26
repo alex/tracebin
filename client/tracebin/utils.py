@@ -1,6 +1,7 @@
 import os
 import struct
 import sys
+from __pypy__ import time
 
 
 def read_unpack(fmt, file):
@@ -19,3 +20,6 @@ if sys.platform.startswith("linux"):
     def get_current_command():
         with open("/proc/{:d}/cmdline".format(os.getpid())) as f:
             return f.read().rstrip("\x00").replace("\x00", " ")
+
+    def high_res_time():
+        return time.clock_gettime(time.CLOCK_MONOTONIC_RAW)

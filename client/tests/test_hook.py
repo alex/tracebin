@@ -182,12 +182,12 @@ class TestHook(object):
             main()
 
         assert len(recorder.calls) == 3
-        # There are calls to time.time() before and after main, in order to
+        # There are calls to high_res_time() before and after main, in order to
         # record the total execution time
         [call1, call2, call3] = recorder.calls
 
-        assert call1.func_name == "time"
-        assert call1.subcalls == []
+        assert call1.func_name == "high_res_time"
+        assert len(call1.subcalls) == 1
 
         assert call2.func_name == "main"
         assert (call2.start_time - start) < 1

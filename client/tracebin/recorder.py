@@ -5,7 +5,6 @@ import mmap
 import pypyjit
 import struct
 import sys
-import time
 from collections import defaultdict
 from contextlib import contextmanager
 
@@ -14,7 +13,7 @@ from logbook import Logger
 from tracebin.aborts import PythonAbort
 from tracebin.calls import PythonCall
 from tracebin.traces import PythonTrace
-from tracebin.utils import read_unpack
+from tracebin.utils import read_unpack, high_res_time
 
 
 PROFILE_IDENTIFIER = 72
@@ -66,10 +65,10 @@ class Recorder(object):
             self._new_mmap()
             sys.setprofile(self.on_profile)
 
-        self._start_time = time.time()
+        self._start_time = high_res_time()
 
     def disable(self, profile):
-        self._end_time = time.time()
+        self._end_time = high_res_time()
         self.runtime = self._end_time - self._start_time
         del self._start_time
 
@@ -171,7 +170,7 @@ class Recorder(object):
             self.log.warning("[abort] Unhandled jitdriver: %s" % jitdriver_name)
 
     def on_profile(self, frame, event, arg):
-        timestamp = time.time()
+        timestamp = high_res_time()
         if event == "call" or event == "c_call":
             event_id = CALL_EVENT
             if event == "call":
