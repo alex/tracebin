@@ -32,6 +32,10 @@ class BaseTraceTests(TestCase):
         for attr, value in kwargs.iteritems():
             self.assertEqual(getattr(obj, attr), value)
 
+    def assert_json_response(self, response, expected_data):
+        self.assertEqual(response["Content-type"], "application/json")
+        self.assertEqual(json.loads(response.content), expected_data)
+
 
     def create_log(self):
         defaults = {
@@ -47,6 +51,14 @@ class BaseTraceTests(TestCase):
 
     def create_timeline_event(self, event_type, start_time, end_time, log):
         return log.timeline_events.create(event_type=event_type, start_time=start_time, end_time=end_time)
+
+    def create_call(self, cls, log, parent=None):
+        if parent is None:
+            call_depth = 0
+        else:
+            call_depth = parent.call_depth + 1
+        return cls.objects.create(log=log, start_time=5, end_time=5.5, call_depth=call_depth)
+
 
 class InheritanceManagerTests(BaseTraceTests):
     def test_simple(self):
@@ -249,3 +261,32 @@ class UploadLogTests(BaseTraceTests):
 
         chunk = section.chunks.get(ordering=1)
         self.assert_attributes(chunk, start_line=87, end_line=90)
+
+class CallDataTests(BaseTraceTests):
+    def test_basic_data(self):
+        log = self.create_log()
+        call1 = self.create_call(PythonCall, log=log)
+        call2 = self.create_call(PythonCall, log=log)
+        call3 = self.create_call(PythonCall, log=log, parent=call2)
+
+        response = self.get("trace_call_data", id=log.id)
+        self.assert_json_response(response, [
+            {
+                "name": call1.func_name,
+                "start_time": call1.start_time,
+                "end_time": call1.end_time,
+                "depth": 0,
+            },
+            {
+                "name": call2.func_name,
+                "start_time": call2.start_time,
+                "end_time": call2.end_time,
+                "depth": 0,
+            },
+            {
+                "name": call3.func_name,
+                "start_time": call3.start_time,
+                "end_time": call3.end_time,
+                "depth": 1,
+            },
+        ])

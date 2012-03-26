@@ -6,18 +6,6 @@
     <script type="text/javascript" src="{{ STATIC_URL }}js/d3.v2.min.js"></script>
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
     <script type="text/javascript">
-        var dataset = [
-            {% for call in log.calls.all %}
-                {
-                    depth: {{ call.call_depth }},
-                    name: "{{ call.func_name }}",
-                    start_time: {{ call.start_time }},
-                    end_time: {{ call.end_time }},
-                }{% if not forloop.last %},{% endif %}
-            {% endfor %}
-        ];
-    </script>
-    <script type="text/javascript">
         var attrgetter = function(name) {
             return function(obj) {
                 return obj[name];
@@ -102,44 +90,46 @@
         $(function() {
             var h = 150;
             var w = 600;
-            var x = d3.scale.linear()
-                .domain([
-                    d3.min(dataset, attrgetter("start_time")),
-                    d3.max(dataset, attrgetter("end_time"))
-                ])
-                .range([0, w]);
-            var y = d3.scale.ordinal()
-                .domain(dataset.map(attrgetter("depth")))
-                .rangeBands([0, h]);
+            $.getJSON("{% url trace_call_data log.id %}", function(dataset) {
+                var x = d3.scale.linear()
+                    .domain([
+                        d3.min(dataset, attrgetter("start_time")),
+                        d3.max(dataset, attrgetter("end_time"))
+                    ])
+                    .range([0, w]);
+                var y = d3.scale.ordinal()
+                    .domain(dataset.map(attrgetter("depth")))
+                    .rangeBands([0, h]);
 
-            var svg = d3.select("#timeline #visualization").append("svg")
-                .attr("height", h)
-                .attr("width", w);
+                var svg = d3.select("#timeline #visualization").append("svg")
+                    .attr("height", h)
+                    .attr("width", w);
 
-            svg.selectAll("rect")
-                .data(dataset)
-                .enter()
-                .append("rect")
-                .attr("x", function(d) {
-                    return x(d.start_time);
-                })
-                .attr("width", function(d) {
-                    return x(d.end_time) - x(d.start_time);
-                })
-                .attr("y", function(d) {
-                    return y(d.depth);
-                })
-                .attr("height", y.rangeBand())
-                .attr("fill", colorgenerator(attrgetter("name")))
-                .attr("stroke", "black")
-                .attr("stroke-width", 2)
-                .on("mouseover", function(d) {
-                    $("#timeline #current-function").html("<p>Current function: "
-                        + d.name + "</p>");
-                })
-                .on("mouseout", function(d) {
-                    return $("#timeline #current-function").html("");
-                })
+                svg.selectAll("rect")
+                    .data(dataset)
+                    .enter()
+                    .append("rect")
+                    .attr("x", function(d) {
+                        return x(d.start_time);
+                    })
+                    .attr("width", function(d) {
+                        return x(d.end_time) - x(d.start_time);
+                    })
+                    .attr("y", function(d) {
+                        return y(d.depth);
+                    })
+                    .attr("height", y.rangeBand())
+                    .attr("fill", colorgenerator(attrgetter("name")))
+                    .attr("stroke", "black")
+                    .attr("stroke-width", 2)
+                    .on("mouseover", function(d) {
+                        $("#timeline #current-function").html("<p>Current "
+                            + "function: " + d.name + "</p>");
+                    })
+                    .on("mouseout", function(d) {
+                        return $("#timeline #current-function").html("");
+                    });
+            });
         });
     </script>
     <div id="timeline">

@@ -4,6 +4,8 @@ from django.db import transaction
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.csrf import csrf_exempt
 
+from tracebin_server.utils import JSONResponse
+
 from .models import (Log, RuntimeEnviroment, PythonTrace, TraceSection,
     ResOpChunk, PythonChunk, PythonCall)
 
@@ -123,3 +125,17 @@ def trace_compiled_detail(request, id, compiled_id):
         "log": log,
         "trace": trace,
     })
+
+def trace_call_data(request, id):
+    log = get_object_or_404(Log, id=id)
+
+    data = []
+    for call in log.calls.all():
+        data.append({
+            "name": call.name,
+            "start_time": call.start_time,
+            "end_time": call.end_time,
+            "depth": call.call_depth,
+        })
+
+    return JSONResponse(data)

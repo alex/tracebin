@@ -182,3 +182,7 @@ class Call(models.Model):
 
 class PythonCall(Call):
     func_name = models.CharField(max_length=255)
+
+    @property
+    def name(self):
+        return self.func_name
