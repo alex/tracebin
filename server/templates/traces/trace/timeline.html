@@ -89,7 +89,7 @@
 
         $(function() {
             var h = 150;
-            var w = 600;
+            var w = 675;
             $.getJSON("{% url trace_call_data log.id %}", function(dataset) {
                 var x = d3.scale.linear()
                     .domain([
@@ -97,9 +97,10 @@
                         d3.max(dataset, attrgetter("end_time"))
                     ])
                     .range([0, w]);
-                var y = d3.scale.ordinal()
-                    .domain(dataset.map(attrgetter("depth")))
-                    .rangeBands([0, h]);
+
+                var y = d3.scale.linear()
+                    .domain([0, d3.max(dataset, attrgetter("depth"))])
+                    .range([0, h]);
 
                 var svg = d3.select("#timeline #visualization").append("svg")
                     .attr("height", h)
@@ -118,10 +119,10 @@
                     .attr("y", function(d) {
                         return y(d.depth);
                     })
-                    .attr("height", y.rangeBand())
+                    .attr("height", function(d) {
+                        return y(1);
+                    })
                     .attr("fill", colorgenerator(attrgetter("name")))
-                    .attr("stroke", "black")
-                    .attr("stroke-width", 2)
                     .on("mouseover", function(d) {
                         $("#timeline #current-function").html("<p>Current "
                             + "function: " + d.name + "</p>");
