@@ -173,16 +173,13 @@ class AssemblerChunk(TraceChunk):
 class Call(models.Model):
     log = models.ForeignKey(Log, related_name="calls")
 
+    name = models.CharField(max_length=255)
     start_time = models.FloatField()
     end_time = models.FloatField()
     call_depth = models.PositiveIntegerField()
-    parent = models.ForeignKey("self", null=True)
+    parent = models.ForeignKey("self", null=True, related_name="subcalls")
 
     objects = InheritanceManager()
 
 class PythonCall(Call):
-    func_name = models.CharField(max_length=255)
-
-    @property
-    def name(self):
-        return self.func_name
+    pass

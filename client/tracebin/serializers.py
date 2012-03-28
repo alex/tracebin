@@ -73,7 +73,7 @@ class BaseSerializer(object):
     def visit_python_call(self, call):
         return {
             "type": "python",
-            "func_name": call.func_name,
+            "name": call.func_name,
             "start_time": call.start_time,
             "end_time": call.end_time,
             "subcalls": [self.visit(subcall) for subcall in call.subcalls],

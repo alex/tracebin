@@ -1,6 +1,7 @@
 import json
 
 from django.db import transaction
+from django.db.models import Sum
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.csrf import csrf_exempt
 
@@ -93,11 +94,11 @@ def _add_calls(log, calls, parent=None):
             "start_time": call["start_time"],
             "end_time": call["end_time"],
             "call_depth": depth,
+            "name": call["name"],
             "parent": parent,
             "log": log,
         }
         if call["type"] == "python":
-            kwargs["func_name"] = call["func_name"]
             cls = PythonCall
         inst = cls.objects.create(**kwargs)
         _add_calls(log, call["subcalls"], parent=inst)
@@ -126,7 +127,7 @@ def trace_compiled_detail(request, id, compiled_id):
         "trace": trace,
     })
 
-def trace_call_data(request, id):
+def trace_timeline_call_data(request, id):
     log = get_object_or_404(Log, id=id)
 
     data = []
@@ -136,6 +137,50 @@ def trace_call_data(request, id):
             "start_time": call.start_time,
             "end_time": call.end_time,
             "depth": call.call_depth,
+            "id": call.id,
         })
 
+    return JSONResponse(data)
+
+def trace_call_data(request, id):
+    log = get_object_or_404(Log, id=id)
+    call = get_object_or_404(log.calls.all(), id=request.GET["call_id"])
+
+    call_time = call.end_time - call.start_time
+
+    subcall_times = call.subcalls.aggregate(
+        total_start_time=Sum("start_time"),
+        total_end_time=Sum("end_time")
+    )
+    call_total_subcall_start_time = subcall_times["total_start_time"] or 0
+    call_total_subcall_end_time = subcall_times["total_end_time"] or 0
+    call_subcall_time = call_total_subcall_end_time - call_total_subcall_start_time
+
+    call_exclusive_time = call_time - call_subcall_time
+
+    func_times = log.calls.filter(name=call.name).aggregate(
+        total_start_time=Sum("start_time"),
+        total_end_time=Sum("end_time"),
+    )
+    func_total_start_time = func_times["total_start_time"] or 0
+    func_total_end_time = func_times["total_end_time"] or 0
+
+    func_time = func_total_end_time - func_total_start_time
+
+    func_subcall_times = log.calls.filter(name=call.name).aggregate(
+        total_subcalls_start_time=Sum("subcalls__start_time"),
+        total_subcalls_end_time=Sum("subcalls__end_time"),
+    )
+    func_total_subcall_start_time = func_subcall_times["total_subcalls_start_time"] or 0
+    func_total_subcall_end_time = func_subcall_times["total_subcalls_end_time"] or 0
+    func_subcalls_time = func_total_subcall_end_time - func_total_subcall_start_time
+
+    func_exclusive_time = func_time - func_subcalls_time
+
+    data = {
+        "call_time": call_time,
+        "call_exclusive_time": call_exclusive_time,
+        "func_time": func_time,
+        "func_exclusive_time": func_exclusive_time,
+    }
     return JSONResponse(data)

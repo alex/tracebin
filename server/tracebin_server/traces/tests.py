@@ -9,23 +9,23 @@ from .models import (Log, RuntimeEnviroment, PythonTrace, RegexTrace,
 
 
 class BaseTraceTests(TestCase):
-    def _request(self, method, url_name, url_kwargs, **kwargs):
-        status_code = url_kwargs.pop("status_code", 200)
-        url = reverse(url_name, kwargs=url_kwargs)
-        response = getattr(self.client, method)(url, **kwargs)
+    def _request(self, method, url_name, **kwargs):
+        status_code = kwargs.pop("status_code", 200)
+        meth_kwargs = {}
+        for key in ["data", "content_type"]:
+            if key in kwargs:
+                meth_kwargs[key] = kwargs.pop(key)
+
+        url = reverse(url_name, kwargs=kwargs)
+        response = getattr(self.client, method)(url, **meth_kwargs)
         self.assertEqual(response.status_code, status_code)
         return response
 
     def get(self, url_name, **kwargs):
-        return self._request("get", url_name, url_kwargs=kwargs)
+        return self._request("get", url_name, **kwargs)
 
     def post(self, url_name, **kwargs):
-        url_kwargs = kwargs
-        kwargs = {}
-        for key in ["data", "content_type"]:
-            if key in url_kwargs:
-                kwargs[key] = url_kwargs.pop(key)
-        return self._request("post", url_name, url_kwargs=url_kwargs, **kwargs)
+        return self._request("post", url_name, **kwargs)
 
 
     def assert_attributes(self, obj, **kwargs):
@@ -34,7 +34,8 @@ class BaseTraceTests(TestCase):
 
     def assert_json_response(self, response, expected_data):
         self.assertEqual(response["Content-type"], "application/json")
-        self.assertEqual(json.loads(response.content), expected_data)
+        actual_data = json.loads(response.content)
+        self.assertEqual(actual_data, expected_data)
 
 
     def create_log(self):
@@ -52,12 +53,21 @@ class BaseTraceTests(TestCase):
     def create_timeline_event(self, event_type, start_time, end_time, log):
         return log.timeline_events.create(event_type=event_type, start_time=start_time, end_time=end_time)
 
-    def create_call(self, cls, log, parent=None):
+    def create_call(self, cls, log, name="", start_time=0, end_time=0,
+        parent=None):
+
         if parent is None:
             call_depth = 0
         else:
             call_depth = parent.call_depth + 1
-        return cls.objects.create(log=log, start_time=5, end_time=5.5, call_depth=call_depth)
+        return cls.objects.create(
+            log=log,
+            parent=parent,
+            name=name,
+            start_time=start_time,
+            end_time=end_time,
+            call_depth=call_depth
+        )
 
 
 class InheritanceManagerTests(BaseTraceTests):
@@ -156,26 +166,26 @@ class UploadLogTests(BaseTraceTests):
             "calls": [
                 {
                     "type": "python",
-                    "func_name": "time",
+                    "name": "time",
                     "start_time": 0.0,
                     "end_time": 0.1,
                     "subcalls": [],
                 },
                 {
                     "type": "python",
-                    "func_name": "main",
+                    "name": "main",
                     "start_time": 0.11,
                     "end_time": 2.0,
                     "subcalls": [
                         {
                             "type": "python",
-                            "func_name": "f",
+                            "name": "f",
                             "start_time": .2,
                             "end_time": .4,
                             "subcalls": [
                                 {
                                     "type": "python",
-                                    "func_name": "g",
+                                    "name": "g",
                                     "start_time": .25,
                                     "end_time": .35,
                                     "subcalls": [],
@@ -184,7 +194,7 @@ class UploadLogTests(BaseTraceTests):
                         },
                         {
                             "type": "python",
-                            "func_name": "h",
+                            "name": "h",
                             "start_time": 1.2,
                             "end_time": 1.8,
                             "subcalls": [],
@@ -200,10 +210,10 @@ class UploadLogTests(BaseTraceTests):
             (PythonCall, log, "f", 0.2, 0.4, 1),
             (PythonCall, log, "g", 0.25, 0.35, 2),
             (PythonCall, log, "h", 1.2, 1.8, 1),
-        ], attrgetter("__class__", "log", "func_name", "start_time", "end_time", "call_depth"))
+        ], attrgetter("__class__", "log", "name", "start_time", "end_time", "call_depth"))
         subcall = log.calls.get(call_depth=2)
-        self.assertEqual(subcall.func_name, "g")
-        self.assertEqual(subcall.parent.func_name, "f")
+        self.assertEqual(subcall.name, "g")
+        self.assertEqual(subcall.parent.name, "f")
 
     def test_trace(self):
         response = self.post("trace_upload", data=json.dumps({
@@ -263,30 +273,75 @@ class UploadLogTests(BaseTraceTests):
         self.assert_attributes(chunk, start_line=87, end_line=90)
 
 class CallDataTests(BaseTraceTests):
-    def test_basic_data(self):
+    def test_basic_timeline_data(self):
         log = self.create_log()
         call1 = self.create_call(PythonCall, log=log)
         call2 = self.create_call(PythonCall, log=log)
         call3 = self.create_call(PythonCall, log=log, parent=call2)
 
-        response = self.get("trace_call_data", id=log.id)
+        response = self.get("trace_timeline_call_data", id=log.id)
         self.assert_json_response(response, [
             {
-                "name": call1.func_name,
+                "name": call1.name,
                 "start_time": call1.start_time,
                 "end_time": call1.end_time,
                 "depth": 0,
+                "id": call1.id,
             },
             {
-                "name": call2.func_name,
+                "name": call2.name,
                 "start_time": call2.start_time,
                 "end_time": call2.end_time,
                 "depth": 0,
+                "id": call2.id,
             },
             {
-                "name": call3.func_name,
+                "name": call3.name,
                 "start_time": call3.start_time,
                 "end_time": call3.end_time,
                 "depth": 1,
+                "id": call3.id,
             },
         ])
+
+    def test_call_data(self):
+        log = self.create_log()
+        call1 = self.create_call(PythonCall, log=log, name="a", start_time=0, end_time=2)
+        call2 = self.create_call(PythonCall, log=log, name="b", start_time=.5, end_time=1.5, parent=call1)
+        call3 = self.create_call(PythonCall, log=log, name="a", start_time=2, end_time=3)
+
+        response = self.get("trace_call_data", id=log.id, data={
+            "call_id": call2.id
+        })
+        self.assert_json_response(response, {
+            "call_time": 1,
+            "call_exclusive_time": 1,
+            "func_time": 1,
+            "func_exclusive_time": 1,
+        })
+
+        response = self.get("trace_call_data", id=log.id, data={
+            "call_id": call1.id
+        })
+        self.assert_json_response(response, {
+            "call_time": 2,
+            "call_exclusive_time": 1,
+            "func_time": 3,
+            "func_exclusive_time": 2,
+        })
+
+    def test_call_data_multiple_subcall(self):
+        log = self.create_log()
+        call = self.create_call(PythonCall, log=log, name="a", start_time=0, end_time=10)
+        for i in xrange(1, 9):
+            self.create_call(PythonCall, log=log, name="b", start_time=i, end_time=i+1, parent=call)
+
+        response = self.get("trace_call_data", id=log.id, data={
+            "call_id": call.id,
+        })
+        self.assert_json_response(response, {
+            "call_time": 10,
+            "call_exclusive_time": 2,
+            "func_time": 10,
+            "func_exclusive_time": 2,
+        })

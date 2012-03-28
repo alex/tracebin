@@ -2,6 +2,10 @@
 
 {% load trace_helpers %}
 
+{% block extra_css %}
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/timeline.css" />
+{% endblock %}
+
 {% block page_content %}
     <script type="text/javascript" src="{{ STATIC_URL }}js/d3.v2.min.js"></script>
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
@@ -90,7 +94,7 @@
         $(function() {
             var h = 150;
             var w = 675;
-            $.getJSON("{% url trace_call_data log.id %}", function(dataset) {
+            $.getJSON("{% url trace_timeline_call_data log.id %}", function(dataset) {
                 var x = d3.scale.linear()
                     .domain([
                         d3.min(dataset, attrgetter("start_time")),
@@ -124,18 +128,45 @@
                     })
                     .attr("fill", colorgenerator(attrgetter("name")))
                     .on("mouseover", function(d) {
-                        $("#timeline #current-function").html("<p>Current "
-                            + "function: " + d.name + "</p>");
+                        $("#call-info #call-header #call-name").html(d.name);
+                        $.getJSON("{% url trace_call_data log.id %}", {
+                            call_id: d.id,
+                        }, function(data) {
+                            $("#call-time").html(data["call_time"]);
+                            $("#call-exclusive-time").html(data["call_exclusive_time"]);
+                            $("#func-time").html(data["func_time"]);
+                            $("#func-exclusive-time").html(data["func_exclusive_time"]);
+                        })
                     })
                     .on("mouseout", function(d) {
-                        return $("#timeline #current-function").html("");
+                        $("#call-info #call-header #call-name").html("");
                     });
             });
         });
     </script>
     <div id="timeline">
+        <div id="call-info">
+            <div id="call-header">
+                <code id="call-name"></code>
+            </div>
+            <div id="call-body">
+                <div class="row">
+                    <div class="span5">
+                        <p>
+                            Total time: <strong id="call-time"></strong> seconds<br />
+                            Exclusive time: <strong id="call-exclusive-time"></strong> seconds<br />
+                        </p>
+                    </div>
+                    <div class="span5">
+                        <p>
+                            All invocation's total time: <strong id="func-time"></strong> seconds<br />
+                            All invocation's exclusive time: <strong id="func-exclusive-time"></strong> seconds<br />
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div id="visualization"></div>
-        <div id="current-function"></div>
     </div>
 
 {% endblock %}
