@@ -178,8 +178,3 @@ class Call(models.Model):
     end_time = models.FloatField()
     call_depth = models.PositiveIntegerField()
     parent = models.ForeignKey("self", null=True, related_name="subcalls")
-
-    objects = InheritanceManager()
-
-class PythonCall(Call):
-    pass

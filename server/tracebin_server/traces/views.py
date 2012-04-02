@@ -1,4 +1,5 @@
 import json
+from collections import defaultdict
 
 from django.db import transaction
 from django.db.models import Sum
@@ -8,7 +9,7 @@ from django.views.decorators.csrf import csrf_exempt
 from tracebin_server.utils import JSONResponse
 
 from .models import (Log, RuntimeEnviroment, PythonTrace, TraceSection,
-    ResOpChunk, PythonChunk, PythonCall)
+    ResOpChunk, PythonChunk, Call)
 
 
 def trace_overview(request, id):
@@ -89,6 +90,8 @@ def _add_calls(log, calls, parent=None):
         depth = 0
     else:
         depth = parent.call_depth + 1
+    # These are calls which can be grouped together into a single insert.
+    no_children_calls = []
     for call in calls:
         kwargs = {
             "start_time": call["start_time"],
@@ -98,10 +101,14 @@ def _add_calls(log, calls, parent=None):
             "parent": parent,
             "log": log,
         }
-        if call["type"] == "python":
-            cls = PythonCall
-        inst = cls.objects.create(**kwargs)
-        _add_calls(log, call["subcalls"], parent=inst)
+        if call["subcalls"]:
+            inst = Call.objects.create(**kwargs)
+            _add_calls(log, call["subcalls"], parent=inst)
+        else:
+            no_children_calls.append(Call(**kwargs))
+    if no_children_calls:
+        Call.objects.bulk_create(no_children_calls)
+
 
 
 def trace_compiled_list(request, id):
