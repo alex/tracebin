@@ -23,13 +23,15 @@ RETURN_EVENT = 1
 
 @contextmanager
 def record(**kwargs):
-    recorder = Recorder()
+    recorder = Recorder(kwargs.pop("logger", None))
     with recorder.record(**kwargs):
         yield recorder
 
 class Recorder(object):
-    def __init__(self):
-        self.log = Logger("tracebin.Recorder")
+    def __init__(self, logger=None):
+        if logger is None:
+            logger = Logger("tracebin.Recorder")
+        self.logger = logger
         self._traces = []
         self._pending_traces = []
         self.aborts = []
@@ -150,7 +152,7 @@ class Recorder(object):
 
     def on_compile(self, jitdriver_name, kind, greenkey, ops, asm_ptr, asm_len):
         if kind != "loop":
-            self.log.warning("[compile] Unhandled compiled kind: %s" % kind)
+            self.logger.warning("[compile] Unhandled compiled kind: %s" % kind)
             return
 
         if jitdriver_name == "pypyjit":
@@ -158,7 +160,7 @@ class Recorder(object):
                 (PythonTrace, greenkey, ops, ctypes.string_at(asm_ptr, asm_len))
             )
         else:
-            self.log.warning("[compile] Unhandled jitdriver: %s" % jitdriver_name)
+            self.logger.warning("[compile] Unhandled jitdriver: %s" % jitdriver_name)
 
     def on_abort(self, jitdriver_name, greenkey, reason):
         if jitdriver_name == "pypyjit":
@@ -167,7 +169,7 @@ class Recorder(object):
                 PythonAbort(reason, frame.f_code, frame.f_lineno)
             )
         else:
-            self.log.warning("[abort] Unhandled jitdriver: %s" % jitdriver_name)
+            self.logger.warning("[abort] Unhandled jitdriver: %s" % jitdriver_name)
 
     def on_profile(self, frame, event, arg):
         timestamp = high_res_time()
@@ -184,7 +186,7 @@ class Recorder(object):
         elif event == "exception" or event == "c_exception":
             return
         else:
-            self.log.warning("[profile] Unknown event: %s" % event)
+            self.logger.warning("[profile] Unknown event: %s" % event)
             return
 
         if self._current_profile_mmap.tell() + len(content) + 2 > len(self._current_profile_mmap):

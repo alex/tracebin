@@ -5,6 +5,8 @@ import runpy
 import sys
 from ConfigParser import ConfigParser
 
+import logbook
+
 import requests
 
 from tracebin.recorder import record
@@ -27,7 +29,14 @@ def main(argv):
         "--dump-format", choices=BaseSerializer.ALL_SERIALIZERS.viewkeys(),
     )
 
+    parser.add_argument(
+        "-v", "--verbose", action="store_true",
+    )
+
+
     args = parser.parse_args(argv[1:])
+
+    logger = logbook.Logger(level=logbook.INFO if args.verbose else logbook.WARNING)
 
     if args.action != "dump" and args.dump_format:
         parser.error()
@@ -46,18 +55,24 @@ def main(argv):
 
     command = get_current_command()
 
-    with record(profile=args.profile) as recorder:
+    logger.info("Starting running")
+    with record(logger=logger, profile=args.profile) as recorder:
         runpy.run_path(args.file, run_name="__main__")
+    logger.info("User program finished")
 
     serializer_cls = BaseSerializer.ALL_SERIALIZERS[args.dump_format if args.dump_format else "json"]
     serializer = serializer_cls(recorder)
 
+    logger.info("Starting serialization")
     dump = serializer.dump(extra_data={"command": command})
+    logger.info("Serialization finished")
     if args.action == "dump":
         print(dump)
     elif args.action == "upload":
         url = "http://{}:{}/trace/new/".format(config.get("server", "host"), config.getint("server", "port"))
+        logger.info("Starting upload")
         response = requests.post(url, data=dump, headers={"Content-type": "application/json"})
+        logger.info("Upload finished")
         response.raise_for_status()
         print(response.headers["Location"])
 
