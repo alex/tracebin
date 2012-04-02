@@ -1,4 +1,5 @@
 import json
+import zlib
 from collections import defaultdict
 
 from django.db import transaction
@@ -26,7 +27,14 @@ def trace_upload(request):
         return render(request, "traces/trace/new.html")
     assert request.method == "POST"
     assert request.META["CONTENT_TYPE"] == "application/json"
-    data = json.loads(request.raw_post_data)
+    encoding = request.META.get("CONTENT_ENCODING")
+    if encoding == "gzip":
+        raw_data = zlib.decompress(request.raw_post_data)
+    elif encoding is None:
+        raw_data = request.raw_post_data
+    else:
+        raise NotImplementedError(encoding)
+    data = json.loads(raw_data)
     # They're all public=True until we have authentication for the client.
     log = Log.objects.create(
         public=True,

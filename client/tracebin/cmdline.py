@@ -3,6 +3,7 @@ from __future__ import print_function
 import argparse
 import runpy
 import sys
+import zlib
 from ConfigParser import ConfigParser
 
 import logbook
@@ -71,9 +72,16 @@ def main(argv):
     elif args.action == "upload":
         url = "http://{}:{}/trace/new/".format(config.get("server", "host"), config.getint("server", "port"))
         logger.info("Starting upload")
+
+        # level 9 is the slowest, but compresses best.
+        data = zlib.compress(dump, level=9)
+
         response = requests.post(url,
             data=dump,
-            headers={"Content-type": "application/json"},
+            headers={
+                "Content-type": "application/json",
+                "Content-encoding": "gzip",
+            },
             allow_redirects=False,
         )
         logger.info("Upload finished")

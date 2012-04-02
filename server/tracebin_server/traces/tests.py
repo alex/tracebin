@@ -1,4 +1,5 @@
 import json
+import zlib
 from operator import attrgetter
 
 from django.core.urlresolvers import reverse
@@ -12,7 +13,7 @@ class BaseTraceTests(TestCase):
     def _request(self, method, url_name, **kwargs):
         status_code = kwargs.pop("status_code", 200)
         meth_kwargs = {}
-        for key in ["data", "content_type"]:
+        for key in ["data", "content_type", "CONTENT_ENCODING"]:
             if key in kwargs:
                 meth_kwargs[key] = kwargs.pop(key)
 
@@ -298,6 +299,19 @@ class UploadLogTests(BaseTraceTests):
                     },
                 ],
             }), content_type="application/json", status_code=302)
+
+    def test_compressed_data(self):
+        data = json.dumps({
+            "command": "pypy x.py",
+            "stdout": "",
+            "stderr": "",
+            "runtime": 20,
+            "options": {},
+            "calls": [],
+        })
+        self.post("trace_upload", data=zlib.compress(data), content_type="application/json", CONTENT_ENCODING="gzip", status_code=302)
+        log = Log.objects.get()
+        self.assert_attributes(log, command="pypy x.py", stderr="", runtime=20)
 
 class CallDataTests(BaseTraceTests):
     def test_basic_timeline_data(self):
