@@ -71,7 +71,11 @@ def main(argv):
     elif args.action == "upload":
         url = "http://{}:{}/trace/new/".format(config.get("server", "host"), config.getint("server", "port"))
         logger.info("Starting upload")
-        response = requests.post(url, data=dump, headers={"Content-type": "application/json"})
+        response = requests.post(url,
+            data=dump,
+            headers={"Content-type": "application/json"},
+            allow_redirects=False,
+        )
         logger.info("Upload finished")
         response.raise_for_status()
         print(response.headers["Location"])
