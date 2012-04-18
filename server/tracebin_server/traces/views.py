@@ -153,8 +153,8 @@ def trace_timeline_call_data(request, id):
     absolute_end = absolute_start_end["end_time__max"]
 
     filters = {
-        "end_time__gt": start_percent * (absolute_end - absolute_start),
-        "start_time__lt": end_percent * (absolute_end - absolute_start),
+        "end_time__gte": absolute_start + (start_percent * (absolute_end - absolute_start)),
+        "start_time__lte": absolute_start + (end_percent * (absolute_end - absolute_start)),
     }
 
     data = []
