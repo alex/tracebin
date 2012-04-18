@@ -316,30 +316,51 @@ class UploadLogTests(BaseTraceTests):
 class CallDataTests(BaseTraceTests):
     def test_basic_timeline_data(self):
         log = self.create_log()
-        call1 = self.create_call(log=log)
-        call2 = self.create_call(log=log)
-        call3 = self.create_call(log=log, parent=call2)
+        call1 = self.create_call(log=log, start_time=0, end_time=3)
+        call2 = self.create_call(log=log, start_time=3, end_time=5)
+        call3 = self.create_call(log=log, parent=call2, start_time=3.5, end_time=4)
 
         response = self.get("trace_timeline_call_data", id=log.id)
         self.assert_json_response(response, [
             {
                 "name": call1.name,
-                "start_time": call1.start_time,
-                "end_time": call1.end_time,
+                "start_time": 0,
+                "end_time": 3,
                 "depth": 0,
                 "id": call1.id,
             },
             {
                 "name": call2.name,
-                "start_time": call2.start_time,
-                "end_time": call2.end_time,
+                "start_time": 3,
+                "end_time": 5,
                 "depth": 0,
                 "id": call2.id,
             },
             {
                 "name": call3.name,
-                "start_time": call3.start_time,
-                "end_time": call3.end_time,
+                "start_time": 3.5,
+                "end_time": 4,
+                "depth": 1,
+                "id": call3.id,
+            },
+        ])
+
+        response = self.get("trace_timeline_call_data", id=log.id, data={
+            "start_percent": .65,
+            "end_percent": 1,
+        })
+        self.assert_json_response(response, [
+            {
+                "name": call2.name,
+                "start_time": 3,
+                "end_time": 5,
+                "depth": 0,
+                "id": call2.id,
+            },
+            {
+                "name": call3.name,
+                "start_time": 3.5,
+                "end_time": 4,
                 "depth": 1,
                 "id": call3.id,
             },

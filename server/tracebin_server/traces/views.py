@@ -3,7 +3,7 @@ import zlib
 from collections import defaultdict
 
 from django.db import transaction
-from django.db.models import Sum
+from django.db.models import Sum, Min, Max
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.csrf import csrf_exempt
 
@@ -145,8 +145,21 @@ def trace_compiled_detail(request, id, compiled_id):
 def trace_timeline_call_data(request, id):
     log = get_object_or_404(Log, id=id)
 
+    start_percent = float(request.GET.get("start_percent", 0))
+    end_percent = float(request.GET.get("end_percent", 1))
+
+    absolute_start_end = log.calls.aggregate(Min("start_time"), Max("end_time"))
+    absolute_start = absolute_start_end["start_time__min"]
+    absolute_end = absolute_start_end["end_time__max"]
+
+    filters = {
+        "end_time__gt": start_percent * (absolute_end - absolute_start),
+        "start_time__lt": end_percent * (absolute_end - absolute_start),
+    }
+
     data = []
-    for call in log.calls.all():
+    calls = log.calls.filter(**filters)
+    for call in calls.iterator():
         data.append({
             "name": call.name,
             "start_time": call.start_time,
