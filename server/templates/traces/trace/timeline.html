@@ -4,97 +4,25 @@
 
 {% block extra_css %}
     <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/timeline.css" />
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/jqueryui-slider/jquery-ui-1.8.19.custom.css" />
 {% endblock %}
 
 {% block page_content %}
     <script type="text/javascript" src="{{ STATIC_URL }}js/d3.v2.min.js"></script>
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jqueryui-slider/jquery-ui-1.8.19.custom.min.js"></script>
     <script type="text/javascript">
         var attrgetter = function(name) {
             return function(obj) {
                 return obj[name];
             };
         };
-        var hsv_to_rgb = function(h, s, v) {
-            // Adapted from Python's colorsys module.
-            var r, g, b;
-            if (s === 0.0) {
-                r = g = b = v;
-            }
-            else {
-                var i = ~~(h * 6.0);
-                var f = h * 6.0 - i;
-                var p = v * (1.0 - s);
-                var q = v * (1.0 - s * f);
-                var t = v * (1.0 - s * (1.0 - f));
-                switch (i % 6) {
-                    case 0: {
-                        r = v;
-                        g = t;
-                        b = p;
-                        break;
-                    }
-                    case 1: {
-                        r = q;
-                        g = v;
-                        b = p;
-                        break;
-                    }
-                    case 2: {
-                        r = p;
-                        g = v;
-                        b = t;
-                        break;
-                    }
-                    case 3: {
-                        r = p;
-                        g = q;
-                        b = v;
-                        break;
-                    }
-                    case 4: {
-                        r = t;
-                        g = p;
-                        b = v;
-                        break;
-                    }
-                    case 5: {
-                        r = v;
-                        g = p;
-                        b = q;
-                        break;
-                    }
-                }
-            }
-
-            var vv = function(v) {
-                return Math.round(v * 255);
-            };
-
-            return d3.rgb(vv(r), vv(g), vv(b));
-        };
-
-        var colorgenerator = function(func) {
-            // Based on code provided by Marty Alchin.
-            var seen = {};
-            var i = 0;
-            return function(obj) {
-                var label = func(obj);
-                if (!(label in seen)) {
-                    var h = i * .15;
-                    var s = .3 + ((i * .15) % .7);
-                    var v = .3 + (((i + 3) * .15) % .7);
-                    i++;
-                    seen[label] = hsv_to_rgb(h, s, v);
-                }
-                return seen[label];
-            };
-        };
-
-        $(function() {
-            var h = 150;
-            var w = 675;
-            $.getJSON("{% url trace_timeline_call_data log.id %}", function(dataset) {
+        draw_visualization = function(h, w, svg, start, end) {
+            $.getJSON("{% url trace_timeline_call_data log.id %}", {
+                start_percent: start / 100,
+                end_percent: end / 100
+            }, function(dataset) {
+                console.log("data");
                 var x = d3.scale.linear()
                     .domain([
                         d3.min(dataset, attrgetter("start_time")),
@@ -106,10 +34,7 @@
                     .domain([0, d3.max(dataset, attrgetter("depth"))])
                     .range([0, h]);
 
-                var svg = d3.select("#timeline #visualization").append("svg")
-                    .attr("height", h)
-                    .attr("width", w);
-
+                svg.selectAll("rect").remove();
                 svg.selectAll("rect")
                     .data(dataset)
                     .enter()
@@ -126,45 +51,41 @@
                     .attr("height", function(d) {
                         return y(1);
                     })
-                    .attr("fill", colorgenerator(attrgetter("name")))
+                    .attr("fill", attrgetter("color"))
                     .on("mouseover", function(d) {
                         $("#call-info #call-header #call-name").html(d.name);
-                        $.getJSON("{% url trace_call_data log.id %}", {
-                            call_id: d.id,
-                        }, function(data) {
-                            $("#call-time").html(data["call_time"]);
-                            $("#call-exclusive-time").html(data["call_exclusive_time"]);
-                            $("#func-time").html(data["func_time"]);
-                            $("#func-exclusive-time").html(data["func_exclusive_time"]);
-                        })
                     })
                     .on("mouseout", function(d) {
                         $("#call-info #call-header #call-name").html("");
                     });
+            })
+        };
+
+        $(function() {
+            var h = 150;
+            var w = 675;
+            var svg = d3.select("#timeline #visualization").append("svg")
+                .attr("height", h)
+                .attr("width", w);
+            $("#range-selector").slider({
+                range: true,
+                min: 0,
+                max: 100,
+                values: [0, 100],
+                slide: function(event, ui) {
+                    draw_visualization(h, w, svg, ui.values[0], ui.values[1]);
+                }
             });
         });
     </script>
     <div id="timeline">
         <div id="visualization"></div>
+        <div id="range-selector">
+
+        </div>
         <div id="call-info">
             <div id="call-header">
                 <code id="call-name"></code>
-            </div>
-            <div id="call-body">
-                <div class="row">
-                    <div class="span5">
-                        <p>
-                            Total time: <strong id="call-time"></strong> seconds<br />
-                            Exclusive time: <strong id="call-exclusive-time"></strong> seconds<br />
-                        </p>
-                    </div>
-                    <div class="span5">
-                        <p>
-                            All invocation's total time: <strong id="func-time"></strong> seconds<br />
-                            All invocation's exclusive time: <strong id="func-exclusive-time"></strong> seconds<br />
-                        </p>
-                    </div>
-                </div>
             </div>
         </div>
     </div>

@@ -1,6 +1,9 @@
+import colorsys
+import itertools
 import json
 import zlib
-from collections import defaultdict
+from collections import defaultdict, namedtuple
+from operator import attrgetter
 
 from django.db import transaction
 from django.db.models import Sum, Min, Max
@@ -142,6 +145,37 @@ def trace_compiled_detail(request, id, compiled_id):
         "trace": trace,
     })
 
+CallNode = namedtuple("CallNode", ["name", "start_time", "end_time", "depth", "color"])
+
+SATURATION = .8
+VALUE = .8
+
+def generate_colors():
+    # Code from Marty Alchin
+    for i in itertools.count():
+        h = i * .15
+        s = .3 + ((i * .15) % .7)
+        v = .3 + (((i + 3) * .15) % .7)
+        r, g, b = colorsys.hsv_to_rgb(h, s, v)
+        yield int(r * 255), int(g * 255), int(b * 255)
+
+def compute_pixels(node, slice_start, slice_end):
+    slice_width = slice_end - slice_start
+    return 675 * ((node.end_time - node.start_time) / slice_width)
+
+def merge_nodes(node1, node2):
+    names = node1.name | node2.name
+    start_time = min(node1.start_time, node2.start_time)
+    end_time = max(node1.start_time, node2.start_time)
+    assert node1.depth == node2.depth
+
+    node1_weight = (node1.end_time - node1.start_time) / (end_time - start_time)
+    node2_weight = (node2.end_time - node2.start_time) / (end_time - start_time)
+    r = node1.color[0] * node1_weight + node2.color[0] * node2_weight
+    g = node1.color[1] * node1_weight + node2.color[1] * node2_weight
+    b = node1.color[2] * node1_weight + node2.color[2] * node2_weight
+    return CallNode(names, start_time, end_time, node1.depth, (int(r), int(g), int(b)))
+
 def trace_timeline_call_data(request, id):
     log = get_object_or_404(Log, id=id)
 
@@ -157,18 +191,48 @@ def trace_timeline_call_data(request, id):
         "start_time__lte": absolute_start + (end_percent * (absolute_end - absolute_start)),
     }
 
-    data = []
+    data = defaultdict(list)
     calls = log.calls.filter(**filters)
+    color_generator = generate_colors()
+    known_colors = {}
     for call in calls.iterator():
-        data.append({
-            "name": call.name,
-            "start_time": call.start_time,
-            "end_time": call.end_time,
-            "depth": call.call_depth,
-            "id": call.id,
-        })
+        if call.name not in known_colors:
+            known_colors[call.name] = color_generator.next()
+        data[call.call_depth].append(CallNode(
+            {call.name}, call.start_time, call.end_time, call.call_depth,
+            known_colors[call.name]
+        ))
 
-    return JSONResponse(data)
+    slice_start = float("inf")
+    slice_end = float("-inf")
+    for calls in data.itervalues():
+        slice_start = min(slice_start, min(map(attrgetter("start_time"), calls)))
+        slice_end = max(slice_end, max(map(attrgetter("end_time"), calls)))
+
+    for depth, calls in data.items():
+        new_calls = []
+        iterator = iter(sorted(calls, key=attrgetter("start_time")))
+        for node in iterator:
+            while compute_pixels(node, slice_start, slice_end) < 2:
+                try:
+                    next_node = iterator.next()
+                except StopIteration:
+                    break
+                node = merge_nodes(node, next_node)
+            new_calls.append(node)
+        data[depth] = new_calls
+
+
+    return JSONResponse([
+        {
+            "name": ", ".join(node.name),
+            "start_time": node.start_time,
+            "end_time": node.end_time,
+            "depth": node.depth,
+            "color": "#%02X%02X%02X" % node.color,
+        }
+        for depth in data.itervalues() for node in depth
+    ])
 
 def trace_call_data(request, id):
     log = get_object_or_404(Log, id=id)
